@@ -15,7 +15,6 @@ except ImportError:  # pragma: no cover - supports direct script execution.
 
 TOOL_ID = "config_board_v2"
 TOOL_NAME = "配置板烧写程序-V2"
-TOOL_OUTPUT_DIR = Path(core.__file__).resolve().parent
 COMPARE_OUTPUT_NAME = "compare.txt"
 CONFIG_FILTERS = (
     "bit/rbt/b files (*.bit *.rbt *.b);;"
@@ -64,6 +63,7 @@ class ConfigBoardWidget(QtWidgets.QWidget):
         self.services = services
         self.ftdi: Optional[core.FtdiDevice] = None
         self.profile: Optional[core.DeviceProfile] = None
+        self.output_dir = self._resolve_output_dir()
         self._thread: Optional[QtCore.QThread] = None
         self._worker: Optional[OperationWorker] = None
         self._open_device_allowed = True
@@ -158,7 +158,7 @@ class ConfigBoardWidget(QtWidgets.QWidget):
         self.readback_button = QtWidgets.QPushButton("ReadBack")
         self.verify_button = QtWidgets.QPushButton("回读验证")
         self.open_compare_button = QtWidgets.QPushButton("打开验证结果")
-        self.open_compare_button.setEnabled((TOOL_OUTPUT_DIR / COMPARE_OUTPUT_NAME).exists())
+        self.open_compare_button.setEnabled(self._compare_output_path().exists())
         self.readback_button.clicked.connect(self.readback_to_file)
         self.verify_button.clicked.connect(self.verify_files)
         self.open_compare_button.clicked.connect(self.open_compare_result)
@@ -345,6 +345,21 @@ class ConfigBoardWidget(QtWidgets.QWidget):
             length=self.profile.bit_length,
         ))
 
+    def _resolve_output_dir(self) -> Path:
+        if self.services is not None:
+            return self.services.data_dir(TOOL_ID)
+
+        base = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.AppDataLocation)
+        if base:
+            path = Path(base) / TOOL_ID
+        else:
+            path = Path.cwd() / ".fpga_tools" / TOOL_ID
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+
+    def _compare_output_path(self) -> Path:
+        return self.output_dir / COMPARE_OUTPUT_NAME
+
     def close_device(self):
         self._close_current_device()
         self.set_usb_open_state(False)
@@ -397,7 +412,7 @@ class ConfigBoardWidget(QtWidgets.QWidget):
         def work(status):
             for index, file_name in enumerate(file_names, start=1):
                 status("", "当前正在执行第{index}个文件的写入".format(index=index))
-                core.program_file(ftdi, file_name, profile, output_dir=TOOL_OUTPUT_DIR)
+                core.program_file(ftdi, file_name, profile, output_dir=self.output_dir)
             status("", "配置程序结束")
 
         self._run_background("配置", work)
@@ -434,7 +449,7 @@ class ConfigBoardWidget(QtWidgets.QWidget):
 
     def _readback_output_path(self, address: str) -> Path:
         normalized_address = str(int(address))
-        return TOOL_OUTPUT_DIR / "{address}_readback.bit".format(address=normalized_address)
+        return self.output_dir / "{address}_readback.bit".format(address=normalized_address)
 
     def verify_files(self):
         file_names = self._select_files("选择一个或多个文件", VERIFY_FILTERS)
@@ -449,18 +464,18 @@ class ConfigBoardWidget(QtWidgets.QWidget):
 
         def work(status):
             status("", "正在验证......")
-            output_path = TOOL_OUTPUT_DIR / COMPARE_OUTPUT_NAME
-            core.verify_files(ftdi, file_names, profile, output_path, output_dir=TOOL_OUTPUT_DIR)
+            output_path = self._compare_output_path()
+            core.verify_files(ftdi, file_names, profile, output_path, output_dir=self.output_dir)
             status("", "验证完成，结果已写入 {path}".format(path=output_path))
 
         self._run_background("回读验证", work, self._on_verify_finished)
 
     def _on_verify_finished(self, _result):
-        self.open_compare_button.setEnabled((TOOL_OUTPUT_DIR / COMPARE_OUTPUT_NAME).exists())
+        self.open_compare_button.setEnabled(self._compare_output_path().exists())
         self.set_status("", "回读验证完成")
 
     def open_compare_result(self):
-        output_path = TOOL_OUTPUT_DIR / COMPARE_OUTPUT_NAME
+        output_path = self._compare_output_path()
         if not output_path.exists():
             self._show_error("文件不存在", "未找到回读验证结果：{path}".format(path=output_path))
             self.open_compare_button.setEnabled(False)
@@ -473,7 +488,7 @@ class ConfigBoardWidget(QtWidgets.QWidget):
             return
 
         def work(_status):
-            core.convert_files(file_names, output_dir=TOOL_OUTPUT_DIR)
+            core.convert_files(file_names, output_dir=self.output_dir)
 
         self._run_background("码流转换", work)
 
@@ -549,7 +564,7 @@ class ConfigBoardWidget(QtWidgets.QWidget):
         self.readback_button.setEnabled((not running) and connected)
         self.verify_button.setEnabled((not running) and connected)
         self.open_compare_button.setEnabled(
-            (not running) and (TOOL_OUTPUT_DIR / COMPARE_OUTPUT_NAME).exists()
+            (not running) and self._compare_output_path().exists()
         )
 
     def _clear_worker_refs(self):
