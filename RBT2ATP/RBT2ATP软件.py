@@ -242,29 +242,83 @@ class RBT2ATP(QtWidgets.QMainWindow):
         preset_path = self._find_preset_config()
         if preset_path is None:
             searched_paths = "；".join(str(path) for path in self._preset_config_candidates())
-            self._append_status(">>未找到预设配置文件，已查找：%s；使用当前界面默认设置。" % searched_paths)
-            return [self._current_ui_preset("界面默认")]
+            self._append_status(">>未找到预设配置文件，已查找：%s；使用内置默认预设。" % searched_paths)
+            return self._load_builtin_presets()
 
         try:
             with preset_path.open("r", encoding="utf-8") as preset_file:
                 raw_config = json.load(preset_file)
         except json.JSONDecodeError as exc:
-            self._append_status(">>预设配置文件格式有误：%s，使用当前界面默认设置。" % exc)
-            return [self._current_ui_preset("界面默认")]
+            self._append_status(">>预设配置文件格式有误：%s，使用内置默认预设。" % exc)
+            return self._load_builtin_presets()
         except OSError as exc:
-            self._append_status(">>读取预设配置文件失败：%s，使用当前界面默认设置。" % exc)
-            return [self._current_ui_preset("界面默认")]
+            self._append_status(">>读取预设配置文件失败：%s，使用内置默认预设。" % exc)
+            return self._load_builtin_presets()
 
         try:
             presets = self._parse_preset_config(raw_config)
         except ValueError as exc:
-            self._append_status(">>预设配置文件内容有误：%s，使用当前界面默认设置。" % exc)
-            return [self._current_ui_preset("界面默认")]
+            self._append_status(">>预设配置文件内容有误：%s，使用内置默认预设。" % exc)
+            return self._load_builtin_presets()
 
         if not presets:
-            self._append_status(">>预设配置文件没有可用预设，使用当前界面默认设置。")
-            return [self._current_ui_preset("界面默认")]
+            self._append_status(">>预设配置文件没有可用预设，使用内置默认预设。")
+            return self._load_builtin_presets()
         return presets
+
+    def _load_builtin_presets(self):
+        try:
+            return self._parse_preset_config(self._builtin_preset_config())
+        except ValueError as exc:
+            self._append_status(">>内置默认预设有误：%s，使用当前界面默认设置。" % exc)
+            return [self._current_ui_preset("界面默认")]
+
+    def _builtin_preset_config(self):
+        common_signals = {
+            "CCLK": True,
+            "CSI": True,
+            "RDWR": True,
+            "PROG": True,
+            "INIT": True,
+            "DONE": True,
+            "MODE": True,
+            "PUDC": False,
+            "BVS": False,
+            "POR": False,
+        }
+        default_table = self._current_table_values()
+        uplus_table = [dict(row) for row in default_table]
+        if len(uplus_table) >= 9:
+            uplus_table[8]["INIT"] = "H"
+
+        return {
+            "presets": [
+                {
+                    "name": "100万门256",
+                    "configuration_mode": "x8",
+                    "vector_mode": "vector",
+                    "timing_mode": "extend",
+                    "signals": common_signals,
+                    "table": default_table,
+                },
+                {
+                    "name": "V2其余",
+                    "configuration_mode": "x8",
+                    "vector_mode": "vector",
+                    "timing_mode": "quad",
+                    "signals": common_signals,
+                    "table": default_table,
+                },
+                {
+                    "name": "U+",
+                    "configuration_mode": "x32",
+                    "vector_mode": "vm_vector",
+                    "timing_mode": "quad",
+                    "signals": common_signals,
+                    "table": uplus_table,
+                },
+            ]
+        }
 
     def _find_preset_config(self):
         for preset_path in self._preset_config_candidates():
