@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import json
 from math import ceil
 from pathlib import Path
 import time
@@ -10,6 +11,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 SELECTED_COLUMN_COLOR = QtGui.QColor(220, 246, 230)
 REPEAT_COLUMN_COLOR = QtGui.QColor(226, 242, 255)
 UNSELECTED_COLUMN_COLOR = QtGui.QColor(255, 255, 255)
+PRESET_CONFIG_FILENAME = "presets.json"
+TABLE_COLUMNS = ("REPEAT", "CCLK", "CSI", "RDWR", "PROG", "INIT", "DONE", "MODE", "PUDC", "BVS", "POR")
+SIGNAL_COLUMNS = TABLE_COLUMNS[1:]
+CONFIGURATION_MODES = ("x32", "x16", "x8", "x1")
 
 
 class CompactTableEditDelegate(QtWidgets.QStyledItemDelegate):
@@ -70,6 +75,8 @@ class RBT2ATP(QtWidgets.QMainWindow):
         }
         self.tableWidget.setItemDelegate(CompactTableEditDelegate(self.tableWidget))
         self.apply_visual_style()
+        self.presets = []
+        self._setup_presets()
 
     def default_init(self):
         self.default_button()
@@ -78,6 +85,8 @@ class RBT2ATP(QtWidgets.QMainWindow):
     def apply_visual_style(self):
         self._set_combo_width(self.comboBox_vector, 126)
         self._set_combo_width(self.comboBox_mod_choose, 112)
+        if hasattr(self, "comboBox_vector_2"):
+            self._set_combo_width(self.comboBox_vector_2, 150)
         self.setStyleSheet("""
             QMainWindow {
             background-color: #f5f7fa;
@@ -213,6 +222,277 @@ class RBT2ATP(QtWidgets.QMainWindow):
             geometry = parent.geometry()
             hint_width = parent.layout().sizeHint().width()
             parent.setGeometry(geometry.x(), geometry.y(), max(geometry.width(), hint_width), geometry.height())
+
+    def _setup_presets(self):
+        if not hasattr(self, "comboBox_vector_2"):
+            return
+
+        self.presets = self._load_presets()
+        self.comboBox_vector_2.clear()
+        for preset in self.presets:
+            self.comboBox_vector_2.addItem(preset["name"], preset)
+
+        self.comboBox_vector_2.currentIndexChanged.connect(self.apply_selected_preset)
+        if self.comboBox_vector_2.count() > 0:
+            self.comboBox_vector_2.setCurrentIndex(0)
+            self.apply_selected_preset(0)
+
+    def _load_presets(self):
+        preset_path = Path(__file__).with_name(PRESET_CONFIG_FILENAME)
+        try:
+            with preset_path.open("r", encoding="utf-8") as preset_file:
+                raw_config = json.load(preset_file)
+        except FileNotFoundError:
+            self._append_status(">>未找到预设配置文件：%s，使用当前界面默认设置。" % preset_path)
+            return [self._current_ui_preset("界面默认")]
+        except json.JSONDecodeError as exc:
+            self._append_status(">>预设配置文件格式有误：%s，使用当前界面默认设置。" % exc)
+            return [self._current_ui_preset("界面默认")]
+        except OSError as exc:
+            self._append_status(">>读取预设配置文件失败：%s，使用当前界面默认设置。" % exc)
+            return [self._current_ui_preset("界面默认")]
+
+        try:
+            presets = self._parse_preset_config(raw_config)
+        except ValueError as exc:
+            self._append_status(">>预设配置文件内容有误：%s，使用当前界面默认设置。" % exc)
+            return [self._current_ui_preset("界面默认")]
+
+        if not presets:
+            self._append_status(">>预设配置文件没有可用预设，使用当前界面默认设置。")
+            return [self._current_ui_preset("界面默认")]
+        return presets
+
+    def _parse_preset_config(self, raw_config):
+        if isinstance(raw_config, dict):
+            raw_presets = raw_config.get("presets")
+        else:
+            raw_presets = raw_config
+
+        if not isinstance(raw_presets, list):
+            raise ValueError("顶层应为预设列表，或包含 presets 列表的对象")
+
+        presets = []
+        used_names = set()
+        for index, raw_preset in enumerate(raw_presets, start=1):
+            preset = self._normalize_preset(raw_preset, index)
+            if preset["name"] in used_names:
+                raise ValueError("预设名称重复：%s" % preset["name"])
+            used_names.add(preset["name"])
+            presets.append(preset)
+        return presets
+
+    def _normalize_preset(self, raw_preset, index):
+        if not isinstance(raw_preset, dict):
+            raise ValueError("第%d个预设不是对象" % index)
+
+        name = str(raw_preset.get("name", "")).strip()
+        if not name:
+            raise ValueError("第%d个预设缺少 name" % index)
+
+        preset = {"name": name}
+
+        configuration_mode = raw_preset.get("configuration_mode", raw_preset.get("config_mode"))
+        if configuration_mode is not None:
+            configuration_mode = str(configuration_mode)
+            if configuration_mode not in CONFIGURATION_MODES:
+                raise ValueError("%s 的 configuration_mode 无效：%s" % (name, configuration_mode))
+            preset["configuration_mode"] = configuration_mode
+
+        vector_mode = raw_preset.get("vector_mode")
+        if vector_mode is not None:
+            vector_mode = str(vector_mode)
+            if self.comboBox_vector.findText(vector_mode) < 0:
+                raise ValueError("%s 的 vector_mode 无效：%s" % (name, vector_mode))
+            preset["vector_mode"] = vector_mode
+
+        timing_mode = raw_preset.get("timing_mode")
+        if timing_mode is not None:
+            timing_mode = str(timing_mode)
+            if self.comboBox_mod_choose.findText(timing_mode) < 0:
+                raise ValueError("%s 的 timing_mode 无效：%s" % (name, timing_mode))
+            preset["timing_mode"] = timing_mode
+
+        signals = raw_preset.get("signals")
+        if signals is not None:
+            preset["signals"] = self._normalize_preset_signals(signals, name)
+
+        table = raw_preset.get("table")
+        if table is not None:
+            preset["table"] = self._normalize_preset_table(table, name)
+
+        return preset
+
+    def _normalize_preset_signals(self, signals, preset_name):
+        if not isinstance(signals, dict):
+            raise ValueError("%s 的 signals 应为对象" % preset_name)
+
+        normalized = {}
+        for signal_name, enabled in signals.items():
+            signal_name = str(signal_name).upper()
+            if signal_name not in SIGNAL_COLUMNS:
+                raise ValueError("%s 的 signals 包含未知信号：%s" % (preset_name, signal_name))
+            if not isinstance(enabled, bool):
+                raise ValueError("%s 的 %s 信号开关应为 true/false" % (preset_name, signal_name))
+            normalized[signal_name] = enabled
+        return normalized
+
+    def _normalize_preset_table(self, table, preset_name):
+        if isinstance(table, dict):
+            table = self._table_dict_to_rows(table)
+        if not isinstance(table, list):
+            raise ValueError("%s 的 table 应为数组或按行名索引的对象" % preset_name)
+        if len(table) > self.tableWidget.rowCount():
+            raise ValueError("%s 的 table 行数超过界面表格行数" % preset_name)
+
+        normalized_rows = []
+        for row_index, raw_row in enumerate(table):
+            if not isinstance(raw_row, dict):
+                raise ValueError("%s 的 table 第%d行不是对象" % (preset_name, row_index + 1))
+            normalized_row = {}
+            for column_name, value in raw_row.items():
+                column_name = str(column_name).upper()
+                if column_name == "ROW":
+                    continue
+                if column_name not in TABLE_COLUMNS:
+                    raise ValueError("%s 的 table 包含未知列：%s" % (preset_name, column_name))
+                normalized_row[column_name] = "" if value is None else str(value)
+            normalized_rows.append(normalized_row)
+        return normalized_rows
+
+    def _table_dict_to_rows(self, table):
+        rows = []
+        for row_index in range(self.tableWidget.rowCount()):
+            header = self.tableWidget.verticalHeaderItem(row_index)
+            row_name = header.text() if header is not None else str(row_index)
+            row_values = table.get(row_name)
+            if row_values is None:
+                rows.append({})
+            elif isinstance(row_values, dict):
+                rows.append(row_values)
+            else:
+                raise ValueError("%s 行应为对象" % row_name)
+        return rows
+
+    def _current_ui_preset(self, name):
+        return {
+            "name": name,
+            "configuration_mode": self._current_configuration_mode(),
+            "vector_mode": self.comboBox_vector.currentText(),
+            "timing_mode": self.comboBox_mod_choose.currentText(),
+            "signals": self._current_signal_states(),
+            "table": self._current_table_values(),
+        }
+
+    def _current_configuration_mode(self):
+        for mode_name, button in zip(CONFIGURATION_MODES, self.mode):
+            if button.isChecked():
+                return mode_name
+        return CONFIGURATION_MODES[0]
+
+    def _current_signal_states(self):
+        return {
+            signal_name: checkbox.isChecked()
+            for signal_name, checkbox in zip(SIGNAL_COLUMNS, self.all_cb)
+        }
+
+    def _current_table_values(self):
+        rows = []
+        for row_index in range(self.tableWidget.rowCount()):
+            row = {}
+            for column_index, column_name in enumerate(TABLE_COLUMNS):
+                item = self.tableWidget.item(row_index, column_index)
+                row[column_name] = item.text() if item is not None else ""
+            rows.append(row)
+        return rows
+
+    def apply_selected_preset(self, index=None):
+        if not hasattr(self, "comboBox_vector_2"):
+            return False
+
+        if index is None or isinstance(index, str):
+            index = self.comboBox_vector_2.currentIndex()
+        if index < 0:
+            return False
+
+        preset = self.comboBox_vector_2.itemData(index)
+        if not isinstance(preset, dict):
+            return False
+
+        try:
+            self.apply_preset(preset)
+        except ValueError as exc:
+            self._append_status(">>应用预设失败：%s" % exc)
+            return False
+        self._append_status(">>已应用预设：%s" % preset["name"])
+        return True
+
+    def apply_preset(self, preset):
+        configuration_mode = preset.get("configuration_mode")
+        if configuration_mode is not None:
+            self._set_configuration_mode(configuration_mode)
+
+        vector_mode = preset.get("vector_mode")
+        if vector_mode is not None:
+            self._set_combo_text(self.comboBox_vector, vector_mode, "Vector Mode")
+
+        timing_mode = preset.get("timing_mode")
+        if timing_mode is not None:
+            self._set_combo_text(self.comboBox_mod_choose, timing_mode, "Timing Mode")
+
+        signals = preset.get("signals")
+        if signals is not None:
+            self._set_signal_states(signals)
+
+        table = preset.get("table")
+        if table is not None:
+            self._set_table_values(table)
+
+        self.compile_mode = self.comboBox_mod_choose.currentText()
+        self.vector_name = self.comboBox_vector.currentText()
+        self.check_box_change()
+
+    def _set_configuration_mode(self, mode_name):
+        if mode_name not in CONFIGURATION_MODES:
+            raise ValueError("配置模式无效：%s" % mode_name)
+        for current_mode, button in zip(CONFIGURATION_MODES, self.mode):
+            button.setChecked(current_mode == mode_name)
+
+    def _set_combo_text(self, combo_box, value, label):
+        item_index = combo_box.findText(value)
+        if item_index < 0:
+            raise ValueError("%s 无效：%s" % (label, value))
+        combo_box.setCurrentIndex(item_index)
+
+    def _set_signal_states(self, signals):
+        signal_to_checkbox = dict(zip(SIGNAL_COLUMNS, self.all_cb))
+        blockers = [QtCore.QSignalBlocker(checkbox) for checkbox in signal_to_checkbox.values()]
+        try:
+            for signal_name, checked in signals.items():
+                checkbox = signal_to_checkbox.get(signal_name)
+                if checkbox is None:
+                    raise ValueError("未知信号：%s" % signal_name)
+                checkbox.setChecked(checked)
+        finally:
+            del blockers
+
+    def _set_table_values(self, table):
+        was_blocked = self.tableWidget.blockSignals(True)
+        try:
+            for row_index, row in enumerate(table):
+                for column_name, value in row.items():
+                    column_index = TABLE_COLUMNS.index(column_name)
+                    item = self.tableWidget.item(row_index, column_index)
+                    if item is None:
+                        item = QtWidgets.QTableWidgetItem()
+                        self.tableWidget.setItem(row_index, column_index, item)
+                    item.setText(value)
+        finally:
+            self.tableWidget.blockSignals(was_blocked)
+
+    def _append_status(self, message):
+        if hasattr(self, "textBrowser_statusBar"):
+            self.textBrowser_statusBar.append(message)
 
     def default_button(self):
         self.radioButton_x32.setChecked(True)

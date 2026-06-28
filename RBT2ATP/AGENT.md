@@ -59,6 +59,8 @@ def create_widget(parent=None, services=None):
 - 修改表格行高、字体、`QTableWidget::item` padding 或编辑器 delegate 后，必须检查 `REPEAT`、`INIT`、`DONE`、`MODE` 等可编辑单元格的编辑态显示。
 - 下拉框样式由 QSS 中的 `QComboBox` 规则控制；右侧下拉区域会占用文本空间，新增更长选项时同步调整 `_set_combo_width()` 中的固定宽度和父布局宽度。
 - 当前 `comboBox_vector` 和 `comboBox_mod_choose` 在运行时设置固定宽度，避免 `vm_vector`、`normal`、`extend` 等文本在主界面中显示不全。
+- `comboBox_vector_2` 是预设选择框，启动时从子工具目录下的 `presets.json` 读取预设名称并填充；切换预设会应用配置模式、Vector Mode、Timing Mode、信号勾选状态和表格值。
+- `presets.json` 使用 UTF-8 编码，顶层为 `{ "presets": [...] }`；每个预设至少包含唯一 `name`，其他字段可包含 `configuration_mode`、`vector_mode`、`timing_mode`、`signals` 和 `table`。
 
 ## RBT 输入假设
 
