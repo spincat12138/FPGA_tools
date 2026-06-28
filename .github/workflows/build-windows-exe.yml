@@ -45,6 +45,7 @@ jobs:
         run: |
           python -m nuitka `
             --mode=onefile `
+            --assume-yes-for-downloads `
             --windows-console-mode=disable `
             --enable-plugin=pyqt5 `
             --windows-icon-from-ico=RBT2ATP/logo.ico `
