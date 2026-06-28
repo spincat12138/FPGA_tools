@@ -12,6 +12,7 @@ SELECTED_COLUMN_COLOR = QtGui.QColor(220, 246, 230)
 REPEAT_COLUMN_COLOR = QtGui.QColor(226, 242, 255)
 UNSELECTED_COLUMN_COLOR = QtGui.QColor(255, 255, 255)
 PRESET_CONFIG_FILENAME = "presets.json"
+TOOL_DIR_NAME = "RBT2ATP"
 TABLE_COLUMNS = ("REPEAT", "CCLK", "CSI", "RDWR", "PROG", "INIT", "DONE", "MODE", "PUDC", "BVS", "POR")
 SIGNAL_COLUMNS = TABLE_COLUMNS[1:]
 CONFIGURATION_MODES = ("x32", "x16", "x8", "x1")
@@ -238,13 +239,15 @@ class RBT2ATP(QtWidgets.QMainWindow):
             self.apply_selected_preset(0)
 
     def _load_presets(self):
-        preset_path = Path(__file__).with_name(PRESET_CONFIG_FILENAME)
+        preset_path = self._find_preset_config()
+        if preset_path is None:
+            searched_paths = "；".join(str(path) for path in self._preset_config_candidates())
+            self._append_status(">>未找到预设配置文件，已查找：%s；使用当前界面默认设置。" % searched_paths)
+            return [self._current_ui_preset("界面默认")]
+
         try:
             with preset_path.open("r", encoding="utf-8") as preset_file:
                 raw_config = json.load(preset_file)
-        except FileNotFoundError:
-            self._append_status(">>未找到预设配置文件：%s，使用当前界面默认设置。" % preset_path)
-            return [self._current_ui_preset("界面默认")]
         except json.JSONDecodeError as exc:
             self._append_status(">>预设配置文件格式有误：%s，使用当前界面默认设置。" % exc)
             return [self._current_ui_preset("界面默认")]
@@ -262,6 +265,37 @@ class RBT2ATP(QtWidgets.QMainWindow):
             self._append_status(">>预设配置文件没有可用预设，使用当前界面默认设置。")
             return [self._current_ui_preset("界面默认")]
         return presets
+
+    def _find_preset_config(self):
+        for preset_path in self._preset_config_candidates():
+            if preset_path.is_file():
+                return preset_path
+        return None
+
+    def _preset_config_candidates(self):
+        candidates = []
+        if self._is_packaged_app():
+            executable_dir = Path(sys.executable).resolve().parent
+            candidates.extend([
+                executable_dir / TOOL_DIR_NAME / PRESET_CONFIG_FILENAME,
+                executable_dir / PRESET_CONFIG_FILENAME,
+            ])
+
+        module_dir = Path(__file__).resolve().parent
+        candidates.append(module_dir / PRESET_CONFIG_FILENAME)
+
+        unique_candidates = []
+        seen = set()
+        for candidate in candidates:
+            normalized = str(candidate)
+            if normalized in seen:
+                continue
+            seen.add(normalized)
+            unique_candidates.append(candidate)
+        return unique_candidates
+
+    def _is_packaged_app(self):
+        return bool(getattr(sys, "frozen", False) or "__compiled__" in globals())
 
     def _parse_preset_config(self, raw_config):
         if isinstance(raw_config, dict):
