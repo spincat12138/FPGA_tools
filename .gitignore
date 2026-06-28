@@ -1,0 +1,29 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+py38/
+
+# IDE and editor state
+.idea/
+.vscode/
+
+# Test, coverage and packaging output
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Local runtime output
+config_board_v2/compare.txt
+config_board_v2/*_readback.bit
+config_board_v2/header.txt
+config_board_v2/tailer.txt
+
