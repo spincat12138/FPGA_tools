@@ -275,11 +275,11 @@ class RBT2ATP(QtWidgets.QMainWindow):
     def _preset_config_candidates(self):
         candidates = []
         if self._is_packaged_app():
-            executable_dir = Path(sys.executable).resolve().parent
-            candidates.extend([
-                executable_dir / TOOL_DIR_NAME / PRESET_CONFIG_FILENAME,
-                executable_dir / PRESET_CONFIG_FILENAME,
-            ])
+            for executable_dir in self._packaged_executable_dirs():
+                candidates.extend([
+                    executable_dir / TOOL_DIR_NAME / PRESET_CONFIG_FILENAME,
+                    executable_dir / PRESET_CONFIG_FILENAME,
+                ])
 
         module_dir = Path(__file__).resolve().parent
         candidates.append(module_dir / PRESET_CONFIG_FILENAME)
@@ -296,6 +296,40 @@ class RBT2ATP(QtWidgets.QMainWindow):
 
     def _is_packaged_app(self):
         return bool(getattr(sys, "frozen", False) or "__compiled__" in globals())
+
+    def _packaged_executable_dirs(self):
+        dirs = []
+
+        fpga_tools_home = os.environ.get("FPGA_TOOLS_HOME")
+        if fpga_tools_home:
+            dirs.append(self._path_to_dir(fpga_tools_home))
+
+        compiled_info = globals().get("__compiled__")
+        for attribute_name in ("original_argv0", "containing_dir", "main_filename"):
+            attribute_value = getattr(compiled_info, attribute_name, None)
+            if attribute_value:
+                dirs.append(self._path_to_dir(attribute_value))
+
+        if sys.argv and sys.argv[0]:
+            dirs.append(self._path_to_dir(sys.argv[0]))
+        if sys.executable:
+            dirs.append(Path(sys.executable).resolve().parent)
+
+        unique_dirs = []
+        seen = set()
+        for directory in dirs:
+            normalized = str(directory)
+            if normalized in seen:
+                continue
+            seen.add(normalized)
+            unique_dirs.append(directory)
+        return unique_dirs
+
+    def _path_to_dir(self, path_value):
+        path = Path(str(path_value)).expanduser().resolve()
+        if path.suffix:
+            return path.parent
+        return path
 
     def _parse_preset_config(self, raw_config):
         if isinstance(raw_config, dict):

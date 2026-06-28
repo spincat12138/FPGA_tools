@@ -61,7 +61,7 @@ def create_widget(parent=None, services=None):
 - 当前 `comboBox_vector` 和 `comboBox_mod_choose` 在运行时设置固定宽度，避免 `vm_vector`、`normal`、`extend` 等文本在主界面中显示不全。
 - `comboBox_vector_2` 是预设选择框，启动时从子工具目录下的 `presets.json` 读取预设名称并填充；切换预设会应用配置模式、Vector Mode、Timing Mode、信号勾选状态和表格值。
 - `presets.json` 使用 UTF-8 编码，顶层为 `{ "presets": [...] }`；每个预设至少包含唯一 `name`，其他字段可包含 `configuration_mode`、`vector_mode`、`timing_mode`、`signals` 和 `table`。
-- Nuitka onefile 打包必须把 `RBT2ATP/presets.json` 作为 data file 一起包含；运行时优先读取 exe 同目录下的 `RBT2ATP/presets.json` 或 `presets.json` 作为外置覆盖配置，再读取内置资源。
+- Nuitka onefile 打包必须把 `RBT2ATP/presets.json` 作为 data file 一起包含；运行时优先读取 `FPGA_TOOLS_HOME`、Nuitka 原始启动路径或 `sys.argv[0]` 推导出的 exe 同目录下的 `RBT2ATP/presets.json` / `presets.json` 作为外置覆盖配置，再读取内置资源。不要只依赖 `sys.executable`，它在 onefile 下可能指向临时解包目录。
 
 ## RBT 输入假设
 
