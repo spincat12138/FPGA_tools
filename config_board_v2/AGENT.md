@@ -33,11 +33,11 @@ config_board_v2/
 - 设备型号来自 `usbtest_py.DEVICE_BY_NAME`，打开设备后以握手结果更新当前型号。
 - 擦除、配置、ReadBack 和回读验证都要求 USB 设备已打开。
 - 配置文件支持 `.bit`、`.rbt`、`.b`；`.rbt` 会在核心逻辑中按原规则转换后写入。
-- GUI 的 ReadBack 输出文件保持为本工具应用数据目录下的 `<回读地址>_readback.bit`，例如地址 `121` 输出 `121_readback.bit`。
-- GUI 的回读验证输出文件保持为本工具应用数据目录下的 `compare.txt`，报告按核心脚本的追加写入格式生成。
+- GUI 的 ReadBack 输出文件保持为程序所在目录下的 `<回读地址>_readback.bit`，例如地址 `121` 输出 `121_readback.bit`。
+- GUI 的回读验证输出文件保持为程序所在目录下的 `compare.txt`，报告按核心脚本的追加写入格式生成。
 - 回读验证支持 `.bit`、`.b`、`.rbt`、`.txt`，其中 `.rbt` 和 `.txt` 会先按核心脚本规则转换后比较。
-- GUI 的码流转换支持 `.rbt` 和 `.txt`，生成的 `.txt`、`.b`、`header.txt`、`tailer.txt` 保持在本工具应用数据目录下，转换规则由 `usbtest_py.py` 维护。
-- 命令行直接调用 `usbtest_py.py` 时，默认输出路径保持脚本自身默认行为；GUI 会显式传入本工具应用数据目录作为输出目录。
+- GUI 的码流转换支持 `.rbt` 和 `.txt`，生成的 `.txt`、`.b`、`header.txt`、`tailer.txt` 保持在程序所在目录下，转换规则由 `usbtest_py.py` 维护。
+- 命令行直接调用 `usbtest_py.py` 时，默认输出路径保持脚本自身默认行为；GUI 会显式传入程序所在目录作为输出目录。
 
 ## GUI 维护约定
 

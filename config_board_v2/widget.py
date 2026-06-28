@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import traceback
+import sys
 from pathlib import Path
 from typing import Callable, Iterable, Optional
 
@@ -346,16 +347,18 @@ class ConfigBoardWidget(QtWidgets.QWidget):
         ))
 
     def _resolve_output_dir(self) -> Path:
-        if self.services is not None:
-            return self.services.data_dir(TOOL_ID)
-
-        base = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.AppDataLocation)
-        if base:
-            path = Path(base) / TOOL_ID
-        else:
-            path = Path.cwd() / ".fpga_tools" / TOOL_ID
+        path = self._program_dir()
         path.mkdir(parents=True, exist_ok=True)
         return path
+
+    def _program_dir(self) -> Path:
+        if getattr(sys, "frozen", False) or getattr(sys.modules.get("__main__"), "__compiled__", None):
+            return Path(sys.argv[0]).resolve().parent
+
+        entry = Path(sys.argv[0]).resolve()
+        if entry.exists():
+            return entry.parent
+        return Path.cwd()
 
     def _compare_output_path(self) -> Path:
         return self.output_dir / COMPARE_OUTPUT_NAME
