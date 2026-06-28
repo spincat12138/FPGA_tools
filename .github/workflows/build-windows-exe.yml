@@ -25,11 +25,12 @@ jobs:
         with:
           python-version: "3.8"
           cache: pip
+          cache-dependency-path: requirements-build.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install PyQt5 ftd2xx nuitka zstandard
+          python -m pip install -r requirements-build.txt
 
       - name: Syntax check
         run: |
