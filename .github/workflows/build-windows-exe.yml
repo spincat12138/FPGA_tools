@@ -53,6 +53,8 @@ jobs:
             --output-filename=FPGA-tools.exe `
             --include-data-files=RBT2ATP/RBT2ATPgui.ui=RBT2ATP/RBT2ATPgui.ui `
             --include-data-files=RBT2ATP/logo.ico=RBT2ATP/logo.ico `
+            --include-data-files=RBT2ATP/presets.json=RBT2ATP/presets.json `
+            --include-package-data=RBT2ATP `
             --include-package=RBT2ATP `
             --include-package=rbt_file_organization `
             --include-package=create_project `

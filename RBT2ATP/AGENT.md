@@ -61,8 +61,8 @@ def create_widget(parent=None, services=None):
 - 当前 `comboBox_vector` 和 `comboBox_mod_choose` 在运行时设置固定宽度，避免 `vm_vector`、`normal`、`extend` 等文本在主界面中显示不全。
 - `comboBox_vector_2` 是预设选择框，启动时从子工具目录下的 `presets.json` 读取预设名称并填充；切换预设会应用配置模式、Vector Mode、Timing Mode、信号勾选状态和表格值。
 - `presets.json` 使用 UTF-8 编码，顶层为 `{ "presets": [...] }`；每个预设至少包含唯一 `name`，其他字段可包含 `configuration_mode`、`vector_mode`、`timing_mode`、`signals` 和 `table`。
-- Nuitka onefile 打包必须把 `RBT2ATP/presets.json` 作为 data file 一起包含；运行时优先读取 `FPGA_TOOLS_HOME`、Nuitka 原始启动路径或 `sys.argv[0]` 推导出的 exe 同目录下的 `RBT2ATP/presets.json` / `presets.json` 作为外置覆盖配置，再读取内置资源。不要只依赖 `sys.executable`，它在 onefile 下可能指向临时解包目录。
-- 如果所有 `presets.json` 候选路径都不可用，程序会使用 `RBT2ATP软件.py` 中的内置默认预设作为兜底，避免打包资源缺失时下拉框只剩“界面默认”；修改默认预设内容时，应优先修改 `presets.json`，并同步检查内置兜底值是否仍一致。
+- `presets.json` 是预设的唯一事实来源；程序通过 `importlib.resources` 从 `RBT2ATP` 包内读取，不读取 exe 同目录或用户目录下的外置预设，也不在代码中维护预设兜底。
+- Nuitka onefile 打包必须把 `RBT2ATP/presets.json` 作为包内资源一起包含；修改预设内容时只更新 `presets.json`，并同步检查 `.github/workflows/build-windows-exe.yml` 中的 data/package-data 打包项仍覆盖该文件。
 
 ## RBT 输入假设
 

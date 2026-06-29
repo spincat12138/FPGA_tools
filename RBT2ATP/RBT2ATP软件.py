@@ -2,6 +2,7 @@
 import sys
 import os
 import json
+from importlib import resources
 from math import ceil
 from pathlib import Path
 import time
@@ -12,7 +13,7 @@ SELECTED_COLUMN_COLOR = QtGui.QColor(220, 246, 230)
 REPEAT_COLUMN_COLOR = QtGui.QColor(226, 242, 255)
 UNSELECTED_COLUMN_COLOR = QtGui.QColor(255, 255, 255)
 PRESET_CONFIG_FILENAME = "presets.json"
-TOOL_DIR_NAME = "RBT2ATP"
+TOOL_PACKAGE_NAME = "RBT2ATP"
 TABLE_COLUMNS = ("REPEAT", "CCLK", "CSI", "RDWR", "PROG", "INIT", "DONE", "MODE", "PUDC", "BVS", "POR")
 SIGNAL_COLUMNS = TABLE_COLUMNS[1:]
 CONFIGURATION_MODES = ("x32", "x16", "x8", "x1")
@@ -239,151 +240,31 @@ class RBT2ATP(QtWidgets.QMainWindow):
             self.apply_selected_preset(0)
 
     def _load_presets(self):
-        preset_path = self._find_preset_config()
-        if preset_path is None:
-            searched_paths = "；".join(str(path) for path in self._preset_config_candidates())
-            self._append_status(">>未找到预设配置文件，已查找：%s；使用内置默认预设。" % searched_paths)
-            return self._load_builtin_presets()
-
         try:
-            with preset_path.open("r", encoding="utf-8") as preset_file:
-                raw_config = json.load(preset_file)
+            raw_config = self._read_packaged_preset_config()
+        except FileNotFoundError as exc:
+            self._append_status(">>未找到内置预设配置文件：%s" % exc)
+            return []
         except json.JSONDecodeError as exc:
-            self._append_status(">>预设配置文件格式有误：%s，使用内置默认预设。" % exc)
-            return self._load_builtin_presets()
+            self._append_status(">>内置预设配置文件格式有误：%s" % exc)
+            return []
         except OSError as exc:
-            self._append_status(">>读取预设配置文件失败：%s，使用内置默认预设。" % exc)
-            return self._load_builtin_presets()
+            self._append_status(">>读取内置预设配置文件失败：%s" % exc)
+            return []
 
         try:
             presets = self._parse_preset_config(raw_config)
         except ValueError as exc:
-            self._append_status(">>预设配置文件内容有误：%s，使用内置默认预设。" % exc)
-            return self._load_builtin_presets()
+            self._append_status(">>内置预设配置文件内容有误：%s" % exc)
+            return []
 
         if not presets:
-            self._append_status(">>预设配置文件没有可用预设，使用内置默认预设。")
-            return self._load_builtin_presets()
+            self._append_status(">>内置预设配置文件没有可用预设。")
         return presets
 
-    def _load_builtin_presets(self):
-        try:
-            return self._parse_preset_config(self._builtin_preset_config())
-        except ValueError as exc:
-            self._append_status(">>内置默认预设有误：%s，使用当前界面默认设置。" % exc)
-            return [self._current_ui_preset("界面默认")]
-
-    def _builtin_preset_config(self):
-        common_signals = {
-            "CCLK": True,
-            "CSI": True,
-            "RDWR": True,
-            "PROG": True,
-            "INIT": True,
-            "DONE": True,
-            "MODE": True,
-            "PUDC": False,
-            "BVS": False,
-            "POR": False,
-        }
-        default_table = self._current_table_values()
-        uplus_table = [dict(row) for row in default_table]
-        if len(uplus_table) >= 9:
-            uplus_table[8]["INIT"] = "H"
-
-        return {
-            "presets": [
-                {
-                    "name": "100万门256",
-                    "configuration_mode": "x8",
-                    "vector_mode": "vector",
-                    "timing_mode": "extend",
-                    "signals": common_signals,
-                    "table": default_table,
-                },
-                {
-                    "name": "V2其余",
-                    "configuration_mode": "x8",
-                    "vector_mode": "vector",
-                    "timing_mode": "quad",
-                    "signals": common_signals,
-                    "table": default_table,
-                },
-                {
-                    "name": "U+",
-                    "configuration_mode": "x32",
-                    "vector_mode": "vm_vector",
-                    "timing_mode": "quad",
-                    "signals": common_signals,
-                    "table": uplus_table,
-                },
-            ]
-        }
-
-    def _find_preset_config(self):
-        for preset_path in self._preset_config_candidates():
-            if preset_path.is_file():
-                return preset_path
-        return None
-
-    def _preset_config_candidates(self):
-        candidates = []
-        if self._is_packaged_app():
-            for executable_dir in self._packaged_executable_dirs():
-                candidates.extend([
-                    executable_dir / TOOL_DIR_NAME / PRESET_CONFIG_FILENAME,
-                    executable_dir / PRESET_CONFIG_FILENAME,
-                ])
-
-        module_dir = Path(__file__).resolve().parent
-        candidates.append(module_dir / PRESET_CONFIG_FILENAME)
-
-        unique_candidates = []
-        seen = set()
-        for candidate in candidates:
-            normalized = str(candidate)
-            if normalized in seen:
-                continue
-            seen.add(normalized)
-            unique_candidates.append(candidate)
-        return unique_candidates
-
-    def _is_packaged_app(self):
-        return bool(getattr(sys, "frozen", False) or "__compiled__" in globals())
-
-    def _packaged_executable_dirs(self):
-        dirs = []
-
-        fpga_tools_home = os.environ.get("FPGA_TOOLS_HOME")
-        if fpga_tools_home:
-            dirs.append(self._path_to_dir(fpga_tools_home))
-
-        compiled_info = globals().get("__compiled__")
-        for attribute_name in ("original_argv0", "containing_dir", "main_filename"):
-            attribute_value = getattr(compiled_info, attribute_name, None)
-            if attribute_value:
-                dirs.append(self._path_to_dir(attribute_value))
-
-        if sys.argv and sys.argv[0]:
-            dirs.append(self._path_to_dir(sys.argv[0]))
-        if sys.executable:
-            dirs.append(Path(sys.executable).resolve().parent)
-
-        unique_dirs = []
-        seen = set()
-        for directory in dirs:
-            normalized = str(directory)
-            if normalized in seen:
-                continue
-            seen.add(normalized)
-            unique_dirs.append(directory)
-        return unique_dirs
-
-    def _path_to_dir(self, path_value):
-        path = Path(str(path_value)).expanduser().resolve()
-        if path.suffix:
-            return path.parent
-        return path
+    def _read_packaged_preset_config(self):
+        with resources.open_text(TOOL_PACKAGE_NAME, PRESET_CONFIG_FILENAME, encoding="utf-8") as preset_file:
+            return json.load(preset_file)
 
     def _parse_preset_config(self, raw_config):
         if isinstance(raw_config, dict):
