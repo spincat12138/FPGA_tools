@@ -18,6 +18,11 @@ MIN_WINDOW_SIZE = QtCore.QSize(480, 360)
 SCREEN_MARGIN = 80
 TOOL_PREFERRED_SIZE_PROPERTY = "_fpga_tools_preferred_size"
 EXTERNAL_TOOL_SIZE_PROPERTY = "preferred_size"
+SIDEBAR_EXPANDED_MIN_WIDTH = 210
+SIDEBAR_EXPANDED_MAX_WIDTH = 260
+SIDEBAR_COLLAPSED_WIDTH = 64
+NAV_TITLE_ROLE = QtCore.Qt.UserRole + 1
+NAV_TOOL_ID_ROLE = QtCore.Qt.UserRole + 2
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -28,17 +33,60 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(DEFAULT_TOOL_SIZE)
         self._resize_to_tool_pending = False
         self._resizing_to_tool = False
+        self._sidebar_collapsed = False
+        self._sidebar_animation = None
 
         icon_path = ROOT_DIR / "RBT2ATP" / "logo.ico"
         if icon_path.exists():
             self.setWindowIcon(QtGui.QIcon(str(icon_path)))
 
-        self.tabs = QtWidgets.QTabWidget()
-        self.tabs.setObjectName("toolTabs")
-        self.tabs.setDocumentMode(True)
-        self.tabs.setMovable(False)
-        self.tabs.currentChanged.connect(self._schedule_resize_to_current_tool)
-        self.setCentralWidget(self.tabs)
+        self.shell = QtWidgets.QWidget()
+        self.shell.setObjectName("mainShell")
+
+        shell_layout = QtWidgets.QHBoxLayout(self.shell)
+        shell_layout.setContentsMargins(0, 0, 0, 0)
+        shell_layout.setSpacing(0)
+
+        self.sidebar = QtWidgets.QFrame()
+        self.sidebar.setObjectName("toolSidebar")
+        self.sidebar.setMinimumWidth(SIDEBAR_EXPANDED_MIN_WIDTH)
+        self.sidebar.setMaximumWidth(SIDEBAR_EXPANDED_MAX_WIDTH)
+
+        sidebar_layout = QtWidgets.QVBoxLayout(self.sidebar)
+        sidebar_layout.setContentsMargins(14, 14, 10, 14)
+        sidebar_layout.setSpacing(12)
+
+        sidebar_header = QtWidgets.QHBoxLayout()
+        sidebar_header.setContentsMargins(0, 0, 0, 0)
+        sidebar_header.setSpacing(8)
+
+        self.sidebar_title = QtWidgets.QLabel(APP_NAME)
+        self.sidebar_title.setObjectName("sidebarTitle")
+        sidebar_header.addWidget(self.sidebar_title, 1)
+
+        self.sidebar_toggle = QtWidgets.QToolButton()
+        self.sidebar_toggle.setObjectName("sidebarToggle")
+        self.sidebar_toggle.setText("<")
+        self.sidebar_toggle.setToolTip("收起导航")
+        self.sidebar_toggle.clicked.connect(self._toggle_sidebar)
+        sidebar_header.addWidget(self.sidebar_toggle)
+
+        sidebar_layout.addLayout(sidebar_header)
+
+        self.navigation = QtWidgets.QListWidget()
+        self.navigation.setObjectName("toolNavigation")
+        self.navigation.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.navigation.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.navigation.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.navigation.currentRowChanged.connect(self._on_navigation_changed)
+        sidebar_layout.addWidget(self.navigation, 1)
+
+        self.pages = QtWidgets.QStackedWidget()
+        self.pages.setObjectName("toolPages")
+
+        shell_layout.addWidget(self.sidebar)
+        shell_layout.addWidget(self.pages, 1)
+        self.setCentralWidget(self.shell)
 
         self.menuBar().setObjectName("mainMenuBar")
         self.statusBar().setObjectName("mainStatusBar")
@@ -62,9 +110,80 @@ class MainWindow(QtWidgets.QMainWindow):
             QtCore.QEvent.PolishRequest,
             QtCore.QEvent.Show,
         }
-        if watched is self.tabs.currentWidget() and event.type() in resize_events:
+        if watched is self.pages.currentWidget() and event.type() in resize_events:
             self._schedule_resize_to_current_tool()
         return super().eventFilter(watched, event)
+
+    def _on_navigation_changed(self, row):
+        if row < 0 or row >= self.pages.count():
+            return
+        self.pages.setCurrentIndex(row)
+        self._schedule_resize_to_current_tool()
+
+    def _toggle_sidebar(self):
+        self._set_sidebar_collapsed(not self._sidebar_collapsed)
+
+    def _set_sidebar_collapsed(self, collapsed):
+        if collapsed == self._sidebar_collapsed:
+            return
+        self._sidebar_collapsed = collapsed
+        if collapsed:
+            self.sidebar_title.hide()
+            self.sidebar_toggle.setText(">")
+            self.sidebar_toggle.setToolTip("展开导航")
+            target_width = SIDEBAR_COLLAPSED_WIDTH
+        else:
+            self.sidebar_title.show()
+            self.sidebar_toggle.setText("<")
+            self.sidebar_toggle.setToolTip("收起导航")
+            target_width = SIDEBAR_EXPANDED_MIN_WIDTH
+
+        self._sync_navigation_labels()
+        self._animate_sidebar_width(target_width)
+
+    def _animate_sidebar_width(self, target_width):
+        if self._sidebar_animation is not None:
+            self._sidebar_animation.stop()
+
+        if not self.isVisible():
+            self._finish_sidebar_animation(target_width)
+            return
+
+        start_width = self.sidebar.width()
+        if start_width <= 0:
+            start_width = SIDEBAR_EXPANDED_MIN_WIDTH
+
+        self.sidebar.setFixedWidth(start_width)
+        animation = QtCore.QVariantAnimation(self)
+        animation.setDuration(160)
+        animation.setStartValue(start_width)
+        animation.setEndValue(target_width)
+        animation.setEasingCurve(QtCore.QEasingCurve.OutCubic)
+        animation.valueChanged.connect(lambda value: self.sidebar.setFixedWidth(int(value)))
+        animation.finished.connect(lambda: self._finish_sidebar_animation(target_width))
+        animation.start(QtCore.QAbstractAnimation.DeleteWhenStopped)
+        self._sidebar_animation = animation
+
+    def _finish_sidebar_animation(self, target_width):
+        self.sidebar.setMinimumWidth(target_width)
+        if self._sidebar_collapsed:
+            self.sidebar.setMaximumWidth(target_width)
+        else:
+            self.sidebar.setMaximumWidth(SIDEBAR_EXPANDED_MAX_WIDTH)
+        self._sidebar_animation = None
+        self._schedule_resize_to_current_tool()
+
+    def _sync_navigation_labels(self):
+        for row in range(self.navigation.count()):
+            item = self.navigation.item(row)
+            title = item.data(NAV_TITLE_ROLE) or item.text()
+            item.setToolTip(title)
+            if self._sidebar_collapsed:
+                item.setText(str(row + 1))
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
+            else:
+                item.setText(title)
+                item.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
 
     def _build_menu(self):
         file_menu = self.menuBar().addMenu("文件")
@@ -137,39 +256,74 @@ class MainWindow(QtWidgets.QMainWindow):
             }
 
 
-            QTabWidget#toolTabs::pane {
+            QWidget#mainShell {
             background-color: #f5f7fa;
-            border-top: 1px solid #dcdfe6;
             }
 
 
-            QTabWidget#toolTabs::tab-bar {
-            left: 8px;
+            QFrame#toolSidebar {
+            background-color: #ffffff;
+            border-right: 1px solid #dcdfe6;
             }
 
 
-            QTabWidget#toolTabs QTabBar::tab {
-            background-color: #f8f9fb;
-            border: 1px solid #dcdfe6;
-            border-bottom-color: #dcdfe6;
+            QLabel#sidebarTitle {
             color: #2c3e50;
-            padding: 6px 24px;
-            min-width: 136px;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 2px 4px 8px 4px;
             }
 
 
-            QTabWidget#toolTabs QTabBar::tab:hover:!selected {
+            QToolButton#sidebarToggle {
+            background-color: #f5f7fa;
+            border: 1px solid #dcdfe6;
+            border-radius: 5px;
+            color: #606266;
+            font-weight: bold;
+            min-width: 28px;
+            min-height: 26px;
+            padding: 0;
+            }
+
+
+            QToolButton#sidebarToggle:hover {
+            background-color: #ecf5ff;
+            border-color: #409eff;
+            color: #409eff;
+            }
+
+
+            QListWidget#toolNavigation {
+            background-color: transparent;
+            color: #2c3e50;
+            outline: 0;
+            }
+
+
+            QListWidget#toolNavigation::item {
+            border-radius: 6px;
+            padding: 9px 10px;
+            margin: 1px 0;
+            min-height: 22px;
+            }
+
+
+            QListWidget#toolNavigation::item:hover:!selected {
             background-color: #ecf5ff;
             color: #409eff;
             }
 
 
-            QTabWidget#toolTabs QTabBar::tab:selected {
-            background-color: #ffffff;
-            border-top: 2px solid #409eff;
-            border-bottom-color: #ffffff;
-            color: #409eff;
+            QListWidget#toolNavigation::item:selected {
+            background-color: #409eff;
+            color: #ffffff;
             font-weight: bold;
+            }
+
+
+            QStackedWidget#toolPages {
+            background-color: #f5f7fa;
             }
 
 
@@ -223,36 +377,54 @@ class MainWindow(QtWidgets.QMainWindow):
         """)
 
     def _load_tools(self):
-        self.tabs.clear()
+        self.navigation.clear()
+        self._clear_pages()
         enabled_tools = [tool for tool in TOOLS if tool.get("enabled", True)]
         if not enabled_tools:
-            self._add_tab(self._empty_page("暂无已启用工具"), "空")
+            self._add_tool_page(self._empty_page("暂无已启用工具"), "空")
+            self.navigation.setCurrentRow(0)
             self.statusBar().showMessage("暂无已启用工具")
             self._schedule_resize_to_current_tool()
             return
 
         for tool in enabled_tools:
-            self._add_tool_tab(tool)
+            self._add_registered_tool(tool)
 
-        self.statusBar().showMessage("已加载 {count} 个工具".format(count=self.tabs.count()))
+        if self.pages.count():
+            self.navigation.setCurrentRow(0)
+
+        self.statusBar().showMessage("已加载 {count} 个工具".format(count=self.pages.count()))
         self._schedule_resize_to_current_tool()
 
-    def _add_tool_tab(self, tool):
+    def _clear_pages(self):
+        while self.pages.count():
+            widget = self.pages.widget(0)
+            self.pages.removeWidget(widget)
+            widget.deleteLater()
+
+    def _add_registered_tool(self, tool):
         try:
             module = importlib.import_module(tool["package"])
             factory = getattr(module, tool.get("entry", "create_widget"))
-            widget = factory(parent=self.tabs, services=self.services)
+            widget = factory(parent=self.pages, services=self.services)
             if not isinstance(widget, QtWidgets.QWidget):
                 raise TypeError("工具入口没有返回 QWidget 实例")
-            self._add_tab(widget, tool["name"])
+            self._add_tool_page(widget, tool["name"], tool.get("id"))
         except Exception as exc:
             detail = traceback.format_exc()
             self.services.log(tool.get("id", "unknown"), str(exc), level="error")
-            self._add_tab(self._error_page(tool, exc, detail), tool.get("name", "加载失败"))
+            self._add_tool_page(self._error_page(tool, exc, detail), tool.get("name", "加载失败"), tool.get("id"))
 
-    def _add_tab(self, widget, title):
+    def _add_tool_page(self, widget, title, tool_id=None):
         self._prepare_tool_widget(widget)
-        self.tabs.addTab(widget, title)
+        item = QtWidgets.QListWidgetItem(title)
+        item.setToolTip(title)
+        item.setData(NAV_TITLE_ROLE, title)
+        if tool_id:
+            item.setData(NAV_TOOL_ID_ROLE, tool_id)
+        self.navigation.addItem(item)
+        self.pages.addWidget(widget)
+        self._sync_navigation_labels()
 
     def _prepare_tool_widget(self, widget):
         widget.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -270,7 +442,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self._resizing_to_tool or self.isMaximized() or self.isFullScreen():
             return
 
-        current_widget = self.tabs.currentWidget()
+        current_widget = self.pages.currentWidget()
         if current_widget is None:
             return
 

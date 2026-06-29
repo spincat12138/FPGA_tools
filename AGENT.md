@@ -5,13 +5,13 @@
 ## 项目定位
 
 - 本项目是个人 FPGA 工具集合，使用一个统一桌面 GUI 管理多个子工具。
-- 主界面通过标签页切换不同工具；每个子工具在主界面中表现为一个独立 Tab。
+- 主界面通过左侧工具导航切换不同工具；每个子工具在右侧内容区中表现为一个独立页面。
 - 主界面只管理应用壳、工具发现、公共服务和跨工具一致性，不实现具体 FPGA 转换或解析逻辑。
 
 ## 运行环境与 GUI 技术栈
 
 - 本项目默认使用项目内虚拟环境 `py38`；运行、测试、安装依赖时优先使用该环境。
-- GUI 统一使用 `PyQt5` 开发，主界面和子工具标签页都应保持 PyQt5 兼容。
+- GUI 统一使用 `PyQt5` 开发，主界面和子工具页面都应保持 PyQt5 兼容。
 - 不要在未说明原因的情况下引入其他 GUI 框架、切换 Python 环境或升级 Qt 主版本。
 
 ## 文档分层
@@ -24,12 +24,12 @@
 
 主界面负责：
 
-- 创建 `QApplication`、`QMainWindow`、菜单栏、状态栏和中心 `QTabWidget`。
-- 从 `tools_registry.py` 读取子工具元数据，按注册顺序创建标签页。
+- 创建 `QApplication`、`QMainWindow`、菜单栏、状态栏、左侧工具导航和右侧页面容器。
+- 从 `tools_registry.py` 读取子工具元数据，按注册顺序创建导航项和工具页面。
 - 向子工具传入统一的 `ToolServices`，提供日志、配置路径、文件对话框、错误提示和进度上报等公共能力。
 - 捕获子工具加载失败并在主界面中给出可见错误，避免单个工具失败导致整个应用崩溃。
 - 保持跨工具一致的窗口标题、图标、状态提示和异常展示风格。
-- 根据当前标签页子工具的推荐尺寸调整主窗口大小，避免主界面固定尺寸遮挡或浪费空间。
+- 根据当前工具页面的推荐尺寸调整主窗口大小，避免主界面固定尺寸遮挡或浪费空间。
 
 主界面不负责：
 
@@ -76,7 +76,7 @@ def create_widget(parent=None, services=None):
 
 - `TOOL_ID` 使用小写英文、数字和下划线，作为配置、日志、目录和注册表的稳定键。
 - `TOOL_NAME` 是子工具导出的显示名，可以使用中文，并应与注册表显示名保持一致。
-- 主界面标签页文字以 `tools_registry.py` 中的 `name` 为准；修改标签名时同步检查子工具 `TOOL_NAME` 和本文档入口清单。
+- 主界面导航项文字以 `tools_registry.py` 中的 `name` 为准；修改显示名时同步检查子工具 `TOOL_NAME` 和本文档入口清单。
 - `create_widget()` 必须返回 `QWidget` 或其子类。
 - `create_widget()` 只接收主界面传入的 `parent` 和 `services`，不要反向 import 主窗口。
 - 子工具应通过有效的 `sizeHint()`、`minimumSize()`、初始窗口尺寸或 `preferred_size` 动态属性表达推荐显示尺寸。
@@ -176,26 +176,26 @@ class ToolServices:
 ## 主界面加载流程
 
 1. 启动 `QApplication`。
-2. 创建主窗口和中心 `QTabWidget`。
+2. 创建主窗口、左侧工具导航和右侧 `QStackedWidget` 页面容器。
 3. 创建 `ToolServices` 实例。
 4. 读取 `tools_registry.py` 中启用的工具。
-5. 对每个工具执行懒加载，调用 `create_widget(parent=tab_widget, services=services)`。
-6. 将返回的 `QWidget` 添加到 `QTabWidget`，标签名使用注册表中的 `name`。
-7. 加载完成或切换标签页时，根据当前页推荐尺寸调整主窗口。
+5. 对每个工具执行懒加载，调用 `create_widget(parent=pages, services=services)`。
+6. 将返回的 `QWidget` 添加到 `QStackedWidget`，并在左侧导航中添加注册表 `name`。
+7. 加载完成或切换导航项时，根据当前页推荐尺寸调整主窗口。
 8. 如果加载失败，创建一个错误占位页，显示工具名、文档入口和错误摘要。
 
 ## 主界面视觉与尺寸约定
 
-- 主界面壳层样式集中在 `main.py` 的 `apply_visual_style()`，只负责菜单栏、标签页、状态栏、空页面和错误页。
-- 主界面样式通过对象名限定范围，例如 `mainWindow`、`mainMenuBar`、`toolTabs`、`mainStatusBar`，避免通用 QSS 泄漏到子工具内部控件。
+- 主界面壳层样式集中在 `main.py` 的 `apply_visual_style()`，只负责菜单栏、左侧导航、状态栏、空页面和错误页。
+- 主界面样式通过对象名限定范围，例如 `mainWindow`、`mainMenuBar`、`toolNavigation`、`toolPages`、`mainStatusBar`，避免通用 QSS 泄漏到子工具内部控件。
 - 子工具内部控件样式由子工具自行维护；主界面不要用宽泛选择器统一改写 `QPushButton`、`QComboBox`、`QTableWidget` 等子控件。
-- 标签页文字宽度由 `QTabWidget#toolTabs QTabBar::tab` 的 `min-width` 和 `padding` 控制；新增长名称工具时优先调整主界面标签样式，而不是截短工具名。
-- 主窗口根据当前标签页推荐尺寸调整大小，优先使用子工具 `preferred_size` 动态属性，其次使用有效 `sizeHint()`、`minimumSize()` 或加载时记录的初始尺寸。
+- 导航项宽度由左侧栏宽度控制；新增长名称工具时优先调整 `toolSidebar` 宽度或工具显示名，而不是截短工具名。
+- 主窗口根据当前工具页面推荐尺寸调整大小，优先使用子工具 `preferred_size` 动态属性，其次使用有效 `sizeHint()`、`minimumSize()` 或加载时记录的初始尺寸。
 - 主窗口尺寸会限制在当前屏幕可用区域内；子工具不应假设主窗口一定等于自己的 `.ui` 原始尺寸。
 
 ## 子工具入口清单
 
-| TOOL_ID | 标签页名称 | 目录 | 子工具文档 | 独立运行入口 | 主界面接入入口 |
+| TOOL_ID | 导航名称 | 目录 | 子工具文档 | 独立运行入口 | 主界面接入入口 |
 | --- | --- | --- | --- | --- | --- |
 | `rbt2atp` | RBT 转 ATP | `RBT2ATP/` | `RBT2ATP/AGENT.md` | `RBT2ATP/RBT2ATP软件.py` | `RBT2ATP.create_widget` |
 | `rbt_file_organization` | RBT文件整理 | `rbt_file_organization/` | `rbt_file_organization/AGENT.md` | `rbt_file_organization/rbt_file_organization.py` | `rbt_file_organization.create_widget` |
@@ -213,7 +213,7 @@ class ToolServices:
 
 ## 主界面完成标准
 
-- 主 GUI 可以启动，且标签页按注册表顺序加载。
+- 主 GUI 可以启动，且左侧导航项按注册表顺序加载。
 - 任一子工具加载失败时，主界面仍可打开并展示错误占位页。
 - 主界面只通过 `create_widget()` 和 `ToolServices` 与子工具交互。
 - 根文档中的入口清单和 `tools_registry.py` 保持一致。
