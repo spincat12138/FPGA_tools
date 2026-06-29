@@ -3,14 +3,24 @@ import os
 import struct
 import sys
 
+
+BIT_PREAMBLE = b'\x0f\xf0\x0f\xf0\x0f\xf0\x0f\xf0\x00'
+BIT_SYNC_WORD = b'\xaa\x99\x55\x66'
+BIT_METADATA_KEYS = {
+    b'a': 'design',
+    b'b': 'part',
+    b'c': 'date',
+    b'd': 'time',
+}
+
 def _emit(logger, message):
     if logger is not None:
         logger(message)
 
 
-def extract_metadata(data, logger=print):
+def extract_bit_file_info(data, logger=print):
     """
-    从BIT二进制中数据中提取设计信息
+    从标准 Xilinx BIT 文件中提取设计信息和配置 payload。
     """
     metadata = {
         'design': 'unknown',
@@ -18,57 +28,69 @@ def extract_metadata(data, logger=print):
         'date': 'unknown',
         'time': 'unknown',
         'bit_len': 0,
-        'data_start': 0
+        'data_start': 0,
+        'payload': b'',
     }
 
-    try:
-        # 跳过开头的固定字节
-        fix_header = b'\x00\x09\x0f\xf0\x0f\xf0\x0f\xf0\x0f\xf0\x00\x00\x01'
-        idx = data.find(fix_header[:200])
-        if idx == -1:
-            _emit(logger, "未找到标准的BIT文件固定头！")
+    if len(data) < 13:
+        raise ValueError("BIT文件过短，无法解析文件头")
+
+    preamble_length = struct.unpack('>H', data[:2])[0]
+    preamble_start = 2
+    preamble_end = preamble_start + preamble_length
+    if data[preamble_start:preamble_end] != BIT_PREAMBLE:
+        raise ValueError("未找到标准Xilinx BIT文件固定头")
+
+    if data[preamble_end:preamble_end + 2] != b'\x00\x01':
+        raise ValueError("BIT文件固定头后的字段标记不完整")
+
+    index = preamble_end + 2
+    if index > len(data):
+        raise ValueError("BIT文件头不完整")
+
+    while index < len(data):
+        key = data[index:index + 1]
+        index += 1
+
+        if key in BIT_METADATA_KEYS:
+            if index + 2 > len(data):
+                raise ValueError("BIT文件元数据字段长度不完整")
+            length = struct.unpack('>H', data[index:index + 2])[0]
+            index += 2
+            value_end = index + length
+            if value_end > len(data):
+                raise ValueError("BIT文件元数据字段内容不完整")
+            value = data[index:value_end].decode('ascii', errors='replace').strip('\x00')
+            metadata[BIT_METADATA_KEYS[key]] = value
+            index = value_end
+            continue
+
+        if key == b'e':
+            if index + 4 > len(data):
+                raise ValueError("BIT文件payload长度字段不完整")
+            bit_len = struct.unpack('>I', data[index:index + 4])[0]
+            data_start = index + 4
+            data_end = data_start + bit_len
+            if data_end > len(data):
+                raise ValueError("BIT文件payload长度超过文件大小")
+            payload = data[data_start:data_end]
+            if BIT_SYNC_WORD not in payload:
+                raise ValueError("BIT文件payload中未找到同步字AA995566")
+            metadata['bit_len'] = bit_len
+            metadata['data_start'] = data_start
+            metadata['payload'] = payload
             return metadata
 
-        # 寻找标记 'a'(0x61)
-        idx = data.find(b'a')
-        if idx == -1: return metadata
+        raise ValueError("遇到未知BIT文件字段：0x{value:02X}".format(value=key[0]))
 
-        # 提取字段 'a' (Design Name)
-        # 格式：'a' + 2字节长度 + 字符串
-        length = struct.unpack('>H', data[idx+1:idx+3])[0]
-        metadata['design'] = data[idx+3:idx+3+length].decode('ascii').strip('\x00')
-        idx += 3 + length
-
-        if data[idx:idx+1] == b'b':
-            length = struct.unpack('>H', data[idx + 1:idx + 3])[0]
-            metadata['part'] = data[idx + 3:idx + 3 + length].decode('ascii').strip('\x00')
-            idx += 3 + length
-
-        if data[idx:idx+1] == b'c':
-            length = struct.unpack('>H', data[idx + 1:idx + 3])[0]
-            metadata['date'] = data[idx + 3:idx + 3 + length].decode('ascii').strip('\x00')
-            idx += 3 + length
-
-        if data[idx:idx+1] == b'd':
-            length = struct.unpack('>H', data[idx + 1:idx + 3])[0]
-            metadata['time'] = data[idx + 3:idx + 3 + length].decode('ascii').strip('\x00')
-            idx += 3 + length
-
-        if data[idx:idx+1] == b'e':
-            metadata['bit_len'] = struct.unpack('>I', data[idx + 1:idx + 5])[0]
-            metadata['data_start'] = idx + 5
-
-
-    except Exception as e:
-        _emit(logger, "解析头部信息时出错:{error}".format(error=e))
+    raise ValueError("BIT文件中未找到payload字段")
 
     return metadata
 
 
 def bit2rbt(bit_file_path, rbt_file_path=None, rename=False, logger=print):
     """
-    BIT文件转RBT文件，并且恢复文件头信息
-    目前只测试了V2系列，其他系列已知的需要改动同步标志FF的数量
+    BIT文件转RBT文件，并从标准Xilinx BIT容器中恢复设计信息。
     """
     if rbt_file_path is not None:
         rbt_file_path = os.fspath(rbt_file_path)
@@ -87,17 +109,11 @@ def bit2rbt(bit_file_path, rbt_file_path=None, rename=False, logger=print):
         
     _emit(logger, "已读取BIT文件，大小：{bit_data_length} 字节".format(bit_data_length=len(bit_data)))
 
-    info = extract_metadata(bit_data, logger=logger)
-
-    sync_pattern = b'\xff\xff\xff\xff\xaa\x99\x55\x66'
-    start_index = bit_data.find(sync_pattern)
-
-    if start_index == -1:
-        _emit(logger, "未找到同步字，使用Header后默认位置")
-        bit_payload = bit_data[info["data_start"]:]
-    else:
-        _emit(logger, "找到同步字，偏移量:{start_index}".format(start_index=start_index))
-        bit_payload = bit_data[start_index:]
+    info = extract_bit_file_info(bit_data, logger=logger)
+    bit_payload = info['payload']
+    sync_index = bit_payload.find(BIT_SYNC_WORD)
+    _emit(logger, "找到同步字，payload内偏移量:{sync_index}".format(sync_index=sync_index))
+    _emit(logger, "配置payload大小：{payload_length} 字节".format(payload_length=len(bit_payload)))
 
     rbt_header = [
         "Xilinx ASCII Bitstream\n",
@@ -106,7 +122,7 @@ def bit2rbt(bit_file_path, rbt_file_path=None, rename=False, logger=print):
         "Part: {part}\n".format(part=info['part']),
         "Date: {date}\n".format(date=info['date']),
         "Time: {time}\n".format(time=info['time']),
-        "Bits: {bit_data_length}\n".format(bit_data_length=len(bit_data)*8)
+        "Bits: {bit_data_length}\n".format(bit_data_length=len(bit_payload)*8)
     ]
 
     output_dir = os.path.dirname(os.path.abspath(rbt_file_path))
