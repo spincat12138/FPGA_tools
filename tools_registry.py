@@ -18,6 +18,14 @@ TOOLS = [
         "enabled": True,
     },
     {
+        "id": "rbt_bit_converter",
+        "name": "RBT/BIT互转",
+        "package": "rbt_bit_converter",
+        "doc": "rbt_bit_converter/AGENT.md",
+        "entry": "create_widget",
+        "enabled": True,
+    },
+    {
         "id": "create_project",
         "name": "创建Vivado工程",
         "package": "create_project",

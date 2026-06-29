@@ -1,6 +1,6 @@
 # FPGA-tools
 
-PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、Vivado 工程创建和 FTDI 配置板烧写/回读验证。
+PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、RBT/BIT 互转、Vivado 工程创建和 FTDI 配置板烧写/回读验证。
 
 ## 项目简介
 
@@ -12,6 +12,7 @@ PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、Viva
 | --- | --- | --- |
 | RBT 转 ATP | `RBT2ATP/` | 将 `.rbt` 配置数据转换为 `.atp` 向量文件，支持单文件和批量目录转换 |
 | RBT 文件整理 | `rbt_file_organization/` | 扫描目录中的 `.rbt` 文件并整理复制到 `rbt/` 子目录 |
+| RBT/BIT 互转 | `rbt_bit_converter/` | 支持 `.rbt` 转 `.bit` 和 `.bit` 转 `.rbt`，GUI 可多文件批量转换 |
 | 创建 Vivado 工程 | `create_project/` | 创建 Vivado 工程目录结构，或生成 Tcl 并调用 Vivado batch 构建工程 |
 | 配置板烧写程序 V2 | `config_board_v2/` | 通过 FTDI USB 设备执行握手、擦除、配置、ReadBack、回读验证和码流转换 |
 
@@ -71,6 +72,15 @@ python .\rbt_file_organization\rbt_file_organization.py <待整理目录>
 - 扫描时跳过输出目录，避免重复整理。
 - 目标文件已存在时会覆盖，并在结果中标记。
 
+### RBT/BIT 互转
+
+```powershell
+python .\rbt_bit_converter\rbt2bit.py .\example.rbt
+python .\rbt_bit_converter\bit2rbt.py .\example.bit
+```
+
+GUI 中可以分别选择多个 `.rbt` 或 `.bit` 文件批量转换。RBT 转 BIT 默认输出 `<原文件名>.bit`，BIT 转 RBT 默认输出 `<原文件名>.rbt`；勾选界面中的 `提取码流编号` 后，会输出 `No<原文件名>.rbt`。
+
 ### 创建 Vivado 工程
 
 创建工程目录结构：
@@ -124,6 +134,7 @@ FPGA-tools/
     services.py                # 主界面提供给子工具的公共服务
   RBT2ATP/                     # RBT 转 ATP 工具
   rbt_file_organization/       # RBT 文件整理工具
+  rbt_bit_converter/           # RBT/BIT 互转工具
   create_project/              # Vivado 工程创建工具
   config_board_v2/             # 配置板烧写和回读工具
 ```
@@ -143,6 +154,7 @@ FPGA-tools/
 python -m py_compile main.py tools_registry.py common\services.py
 python -m py_compile create_project\create_project.py create_project\widget.py create_project\__init__.py
 python -m py_compile rbt_file_organization\core.py rbt_file_organization\widget.py rbt_file_organization\__init__.py
+python -m py_compile rbt_bit_converter\rbt2bit.py rbt_bit_converter\bit2rbt.py rbt_bit_converter\widget.py rbt_bit_converter\__init__.py
 python -m py_compile config_board_v2\usbtest_py.py config_board_v2\widget.py config_board_v2\usbtest_gui.py config_board_v2\__init__.py
 ```
 
