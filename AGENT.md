@@ -200,6 +200,7 @@ class ToolServices:
 | `rbt2atp` | RBT 转 ATP | `RBT2ATP/` | `RBT2ATP/AGENT.md` | `RBT2ATP/RBT2ATP软件.py` | `RBT2ATP.create_widget` |
 | `rbt_file_organization` | RBT文件整理 | `rbt_file_organization/` | `rbt_file_organization/AGENT.md` | `rbt_file_organization/rbt_file_organization.py` | `rbt_file_organization.create_widget` |
 | `rbt_bit_converter` | RBT/BIT互转 | `rbt_bit_converter/` | `rbt_bit_converter/AGENT.md` | `rbt_bit_converter/rbt2bit.py`, `rbt_bit_converter/bit2rbt.py` | `rbt_bit_converter.create_widget` |
+| `rbt2vcd` | RBT转VCD | `RBT2VCD/` | `RBT2VCD/AGENT.md` | `RBT2VCD/rbt2vcd.py` | `RBT2VCD.create_widget` |
 | `create_project` | 创建Vivado工程 | `create_project/` | `create_project/AGENT.md` | `create_project/create_project.py` | `create_project.create_widget` |
 | `config_board_v2` | 配置板烧写程序-V2 | `config_board_v2/` | `config_board_v2/AGENT.md` | `config_board_v2/usbtest_gui.py` | `config_board_v2.create_widget` |
 

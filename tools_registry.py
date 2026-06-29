@@ -26,6 +26,14 @@ TOOLS = [
         "enabled": True,
     },
     {
+        "id": "rbt2vcd",
+        "name": "RBT转VCD",
+        "package": "RBT2VCD",
+        "doc": "RBT2VCD/AGENT.md",
+        "entry": "create_widget",
+        "enabled": True,
+    },
+    {
         "id": "create_project",
         "name": "创建Vivado工程",
         "package": "create_project",

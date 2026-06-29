@@ -1,6 +1,6 @@
 # FPGA-tools
 
-PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、RBT/BIT 互转、Vivado 工程创建和 FTDI 配置板烧写/回读验证。
+PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、RBT/BIT 互转、RBT 转 VCD、Vivado 工程创建和 FTDI 配置板烧写/回读验证。
 
 ## 项目简介
 
@@ -13,6 +13,7 @@ PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、RBT/
 | RBT 转 ATP | `RBT2ATP/` | 将 `.rbt` 配置数据转换为 `.atp` 向量文件，支持单文件和批量目录转换 |
 | RBT 文件整理 | `rbt_file_organization/` | 扫描目录中的 `.rbt` 文件并整理复制到 `rbt/` 子目录 |
 | RBT/BIT 互转 | `rbt_bit_converter/` | 支持 `.rbt` 转 `.bit` 和 `.bit` 转 `.rbt`，GUI 可多文件批量转换 |
+| RBT 转 VCD | `RBT2VCD/` | 将 Xilinx ASCII `.rbt` 文件转换为 SelectMAP 风格 `.vcd` 文件，GUI 可多文件批量转换 |
 | 创建 Vivado 工程 | `create_project/` | 创建 Vivado 工程目录结构，或生成 Tcl 并调用 Vivado batch 构建工程 |
 | 配置板烧写程序 V2 | `config_board_v2/` | 通过 FTDI USB 设备执行握手、擦除、配置、ReadBack、回读验证和码流转换 |
 
@@ -81,6 +82,14 @@ python .\rbt_bit_converter\bit2rbt.py .\example.bit
 
 GUI 中可以分别选择多个 `.rbt` 或 `.bit` 文件批量转换。RBT 转 BIT 默认输出 `<原文件名>.bit`，BIT 转 RBT 默认输出 `<原文件名>.rbt`；勾选界面中的 `提取码流编号` 后，会输出 `No<原文件名>.rbt`。
 
+### RBT 转 VCD
+
+```powershell
+python .\RBT2VCD\rbt2vcd.py .\example.rbt .\example.vcd
+```
+
+GUI 中可以选择多个 `.rbt` 文件批量转换。默认输出到每个输入文件所在目录，也可以指定统一输出目录。
+
 ### 创建 Vivado 工程
 
 创建工程目录结构：
@@ -135,6 +144,7 @@ FPGA-tools/
   RBT2ATP/                     # RBT 转 ATP 工具
   rbt_file_organization/       # RBT 文件整理工具
   rbt_bit_converter/           # RBT/BIT 互转工具
+  RBT2VCD/                     # RBT 转 VCD 工具
   create_project/              # Vivado 工程创建工具
   config_board_v2/             # 配置板烧写和回读工具
 ```
@@ -155,6 +165,7 @@ python -m py_compile main.py tools_registry.py common\services.py
 python -m py_compile create_project\create_project.py create_project\widget.py create_project\__init__.py
 python -m py_compile rbt_file_organization\core.py rbt_file_organization\widget.py rbt_file_organization\__init__.py
 python -m py_compile rbt_bit_converter\rbt2bit.py rbt_bit_converter\bit2rbt.py rbt_bit_converter\widget.py rbt_bit_converter\__init__.py
+python -m py_compile RBT2VCD\rbt2vcd.py RBT2VCD\widget.py RBT2VCD\__init__.py
 python -m py_compile config_board_v2\usbtest_py.py config_board_v2\widget.py config_board_v2\usbtest_gui.py config_board_v2\__init__.py
 ```
 

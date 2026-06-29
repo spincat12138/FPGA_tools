@@ -37,6 +37,8 @@ jobs:
           python -m py_compile main.py tools_registry.py common/services.py
           python -m py_compile RBT2ATP/RBT2ATP软件.py RBT2ATP/__init__.py
           python -m py_compile rbt_file_organization/core.py rbt_file_organization/widget.py rbt_file_organization/__init__.py
+          python -m py_compile rbt_bit_converter/rbt2bit.py rbt_bit_converter/bit2rbt.py rbt_bit_converter/widget.py rbt_bit_converter/__init__.py
+          python -m py_compile RBT2VCD/rbt2vcd.py RBT2VCD/widget.py RBT2VCD/__init__.py
           python -m py_compile create_project/create_project.py create_project/widget.py create_project/__init__.py
           python -m py_compile config_board_v2/usbtest_py.py config_board_v2/widget.py config_board_v2/usbtest_gui.py config_board_v2/__init__.py
 
@@ -57,6 +59,8 @@ jobs:
             --include-package-data=RBT2ATP `
             --include-package=RBT2ATP `
             --include-package=rbt_file_organization `
+            --include-package=rbt_bit_converter `
+            --include-package=RBT2VCD `
             --include-package=create_project `
             --include-package=config_board_v2 `
             main.py
