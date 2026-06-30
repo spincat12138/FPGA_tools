@@ -41,6 +41,7 @@ jobs:
           python -m py_compile RBT2VCD/rbt2vcd.py RBT2VCD/widget.py RBT2VCD/__init__.py
           python -m py_compile create_project/create_project.py create_project/widget.py create_project/__init__.py
           python -m py_compile config_board_v2/usbtest_py.py config_board_v2/widget.py config_board_v2/usbtest_gui.py config_board_v2/__init__.py
+          python -m py_compile GenerateUcf/core.py GenerateUcf/generate_ucf.py GenerateUcf/widget.py GenerateUcf/__init__.py
 
       - name: Build EXE
         shell: pwsh
@@ -63,6 +64,8 @@ jobs:
             --include-package=RBT2VCD `
             --include-package=create_project `
             --include-package=config_board_v2 `
+            --include-package=GenerateUcf `
+            --include-data-dir=GenerateUcf/profiles=GenerateUcf/profiles `
             main.py
 
       - name: Upload EXE artifact

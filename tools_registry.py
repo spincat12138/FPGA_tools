@@ -49,4 +49,12 @@ TOOLS = [
         "entry": "create_widget",
         "enabled": True,
     },
+    {
+        "id": "generate_ucf",
+        "name": "生成UCF约束",
+        "package": "GenerateUcf",
+        "doc": "GenerateUcf/AGENT.md",
+        "entry": "create_widget",
+        "enabled": True,
+    },
 ]

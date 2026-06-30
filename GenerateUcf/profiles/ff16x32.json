@@ -1,0 +1,39 @@
+{
+  "name": "ff16x32",
+  "description": "单行输出，FF16x32/u00-u31/u1-u8，Y 坐标覆盖 0..127 后 X 跳到 2",
+  "output": {
+    "line_mode": "single",
+    "pair_padding": 64,
+    "end_marker": "# End of constraints"
+  },
+  "modules": {
+    "kind": "list",
+    "values": ["TB0101"]
+  },
+  "uxx": {
+    "kind": "range",
+    "start": 0,
+    "stop": 31,
+    "format": "u%02d"
+  },
+  "uy": {
+    "kind": "range",
+    "start": 1,
+    "stop": 8,
+    "format": "u%d"
+  },
+  "path_template": "{module}/{test_name}/{uxx}/{uy}/*",
+  "blocks": [
+    {
+      "name": "FF16x32",
+      "x_offset": 0,
+      "y_offset": 0
+    }
+  ],
+  "placement": {
+    "x_base": 0,
+    "x_jump": 2,
+    "y_slice": 128,
+    "y_jump": 1
+  }
+}

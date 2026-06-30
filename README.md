@@ -16,6 +16,7 @@ PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、RBT/
 | RBT 转 VCD | `RBT2VCD/` | 将 Xilinx ASCII `.rbt` 文件转换为 SelectMAP 风格 `.vcd` 文件，GUI 可多文件批量转换 |
 | 创建 Vivado 工程 | `create_project/` | 创建 Vivado 工程目录结构，或生成 Tcl 并调用 Vivado batch 构建工程 |
 | 配置板烧写程序 V2 | `config_board_v2/` | 通过 FTDI USB 设备执行握手、擦除、配置、ReadBack、回读验证和码流转换 |
+| 生成 UCF 约束 | `GenerateUcf/` | 使用 JSON profile 配置模块、层级模板和坐标规则，生成 `.ucf` 约束文件 |
 
 ## 环境要求
 
@@ -133,6 +134,18 @@ python .\config_board_v2\usbtest_py.py convert .\example.rbt
 
 `erase` 和 `readback` 的参数是 flash 地址；需要手动指定设备型号时，可以在子命令前添加 `--device BQ2V1000`、`--device BQ2V3000` 或 `--device BQ2V6000`。该工具需要可用的 FTDI D2XX 驱动、USB 设备和对应硬件连接。无 FTDI 环境时，GUI 应能加载并显示环境异常或设备未插入状态。
 
+### 生成 UCF 约束
+
+命令行生成：
+
+```powershell
+python -m GenerateUcf.generate_ucf --profile type1 --output constraints.ucf
+python -m GenerateUcf.generate_ucf --profile type2 --preview 10
+python -m GenerateUcf.generate_ucf --profile .\my_profile.json --output .\constraints.ucf
+```
+
+也可以在主界面中打开“生成UCF约束”，选择内置或外部 JSON profile，在左侧修改参数，右侧实时预览输出示例。
+
 ## 项目结构
 
 ```text
@@ -147,6 +160,7 @@ FPGA-tools/
   RBT2VCD/                     # RBT 转 VCD 工具
   create_project/              # Vivado 工程创建工具
   config_board_v2/             # 配置板烧写和回读工具
+  GenerateUcf/                  # UCF 约束生成工具
 ```
 
 新增子工具时，需要：
@@ -167,6 +181,7 @@ python -m py_compile rbt_file_organization\core.py rbt_file_organization\widget.
 python -m py_compile rbt_bit_converter\rbt2bit.py rbt_bit_converter\bit2rbt.py rbt_bit_converter\widget.py rbt_bit_converter\__init__.py
 python -m py_compile RBT2VCD\rbt2vcd.py RBT2VCD\widget.py RBT2VCD\__init__.py
 python -m py_compile config_board_v2\usbtest_py.py config_board_v2\widget.py config_board_v2\usbtest_gui.py config_board_v2\__init__.py
+python -m py_compile GenerateUcf\core.py GenerateUcf\generate_ucf.py GenerateUcf\widget.py GenerateUcf\__init__.py
 ```
 
 GUI 相关修改建议再做一次启动冒烟验证：

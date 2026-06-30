@@ -1,0 +1,50 @@
+{
+  "name": "type2",
+  "description": "单行输出，SRL16x32/u00-u31/u1-u8",
+  "output": {
+    "line_mode": "single",
+    "pair_padding": 64,
+    "end_marker": "# End of constraints"
+  },
+  "modules": {
+    "kind": "list",
+    "values": [
+      "TB0101",
+      "TB0102",
+      "TB0103",
+      "TB0104",
+      "TB0105",
+      "TB0106",
+      "TB0201",
+      "TB0202",
+      "TB0203",
+      "TB0204"
+    ]
+  },
+  "uxx": {
+    "kind": "range",
+    "start": 0,
+    "stop": 31,
+    "format": "u%02d"
+  },
+  "uy": {
+    "kind": "range",
+    "start": 1,
+    "stop": 8,
+    "format": "u%d"
+  },
+  "path_template": "{module}/{test_name}/{uxx}/{uy}/*",
+  "blocks": [
+    {
+      "name": "SRL16x32",
+      "x_offset": 0,
+      "y_offset": 0
+    }
+  ],
+  "placement": {
+    "x_base": 1,
+    "x_jump": 2,
+    "y_slice": 80,
+    "y_jump": 1
+  }
+}

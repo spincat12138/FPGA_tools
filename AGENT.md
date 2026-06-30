@@ -203,6 +203,7 @@ class ToolServices:
 | `rbt2vcd` | RBT转VCD | `RBT2VCD/` | `RBT2VCD/AGENT.md` | `RBT2VCD/rbt2vcd.py` | `RBT2VCD.create_widget` |
 | `create_project` | 创建Vivado工程 | `create_project/` | `create_project/AGENT.md` | `create_project/create_project.py` | `create_project.create_widget` |
 | `config_board_v2` | 配置板烧写程序-V2 | `config_board_v2/` | `config_board_v2/AGENT.md` | `config_board_v2/usbtest_gui.py` | `config_board_v2.create_widget` |
+| `generate_ucf` | 生成UCF约束 | `GenerateUcf/` | `GenerateUcf/AGENT.md` | `GenerateUcf/generate_ucf.py` | `GenerateUcf.create_widget` |
 
 ## 新增子工具登记要求
 

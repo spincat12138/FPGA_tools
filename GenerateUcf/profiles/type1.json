@@ -1,0 +1,45 @@
+{
+  "name": "type1",
+  "description": "双列输出，同时包含 TestBlockA/TestBlockB 和字母 uy",
+  "output": {
+    "line_mode": "paired",
+    "pair_padding": 64,
+    "end_marker": "# End of constraints"
+  },
+  "modules": {
+    "kind": "range",
+    "template": "A[{i}].u",
+    "start": 0,
+    "stop": 19
+  },
+  "uxx": {
+    "kind": "range",
+    "start": 0,
+    "stop": 31,
+    "format": "u%02d"
+  },
+  "uy": {
+    "kind": "list",
+    "values": ["A", "B", "C", "D"],
+    "format": "u%s"
+  },
+  "path_template": "{module}/{block}/{uxx}/{uy}",
+  "blocks": [
+    {
+      "name": "TestBlockA",
+      "x_offset": 0,
+      "y_offset": 0
+    },
+    {
+      "name": "TestBlockB",
+      "x_offset": 0,
+      "y_offset": 0
+    }
+  ],
+  "placement": {
+    "x_base": 4,
+    "x_jump": 6,
+    "y_slice": 80,
+    "y_jump": 1
+  }
+}
