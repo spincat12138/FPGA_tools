@@ -66,6 +66,7 @@ jobs:
             --include-package=config_board_v2 `
             --include-package=GenerateUcf `
             --include-data-dir=GenerateUcf/profiles=GenerateUcf/profiles `
+            --include-data-dir=GenerateUcf/assets=GenerateUcf/assets `
             main.py
 
       - name: Upload EXE artifact

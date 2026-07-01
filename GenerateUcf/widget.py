@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+   # -*- coding: utf-8 -*-
 import copy
 import sys
 import traceback
@@ -20,6 +20,9 @@ from .metadata import TOOL_ID, TOOL_NAME
 
 
 PREVIEW_LINES = 80
+ASSET_DIR = Path(__file__).resolve().parent / "assets"
+COMBO_ARROW_PATH = (ASSET_DIR / "combo_down_arrow.svg").as_posix()
+SPIN_UP_ARROW_PATH = (ASSET_DIR / "spin_up_arrow.svg").as_posix()
 SCROLLBAR_STYLE = """
     QScrollBar:vertical {
     width: 8px;
@@ -83,7 +86,7 @@ COMBOBOX_STYLE = """
     QComboBox {
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 2px 5px;
+    padding: 4px 26px 4px 6px;
     background-color: white;
     }
 
@@ -100,25 +103,22 @@ COMBOBOX_STYLE = """
     QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
-    width: 20px;
+    width: 22px;
     border-left: 1px solid #ccc;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
-    background: #f0f0f0;
+    background-color: #f5f5f5;
     }
 
     QComboBox::drop-down:hover {
-    background: #dce6f0;
+    background-color: #e8e8e8;
     }
 
     QComboBox::down-arrow {
-    image: none;
-    width: 0;
-    height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 5px solid #606266;
-    margin-right: 6px;
+    image: url("__COMBO_ARROW_PATH__");
+    width: 8px;
+    height: 6px;
+    margin-right: 7px;
     }
 
     QComboBox QAbstractItemView {
@@ -128,7 +128,7 @@ COMBOBOX_STYLE = """
     selection-color: #333;
     outline: 0;
     }
-"""
+""".replace("__COMBO_ARROW_PATH__", COMBO_ARROW_PATH)
 SPINBOX_STYLE = """
     QSpinBox {
     border: 1px solid #ccc;
@@ -168,21 +168,15 @@ SPINBOX_STYLE = """
     }
 
     QSpinBox::up-arrow {
-    image: none;
-    width: 0;
-    height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-bottom: 5px solid #606266;
+    image: url("C:/Personal/Code/FPGA-tools/GenerateUcf/assets/spin_up_arrow.svg");
+    width: 8px;
+    height: 6px;
     }
 
     QSpinBox::down-arrow {
-    image: none;
-    width: 0;
-    height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 5px solid #606266;
+    image: url("C:/Personal/Code/FPGA-tools/GenerateUcf/assets/spin_down_arrow.svg");
+    width: 8px;
+    height: 6px;
     }
 """
 SECTION_GROUP_STYLE = """
@@ -218,7 +212,7 @@ class GenerateUcfWidget(QtWidgets.QWidget):
         self._updating_fields = False
         self._field_update_timer = None
         self.setObjectName("generateUcfWidget")
-        self.setProperty("preferred_size", QtCore.QSize(1100, 580))
+        self.setProperty("preferred_size", QtCore.QSize(1360, 640))
         self._build_ui()
         self._connect_field_updates()
         self.apply_visual_style()
@@ -258,7 +252,7 @@ class GenerateUcfWidget(QtWidgets.QWidget):
         body_splitter.addWidget(self._build_preview_panel())
         body_splitter.setStretchFactor(0, 0)
         body_splitter.setStretchFactor(1, 1)
-        body_splitter.setSizes([420, 680])
+        body_splitter.setSizes([600, 760])
 
         output_row = QtWidgets.QHBoxLayout()
         output_row.setSpacing(8)
@@ -288,7 +282,7 @@ class GenerateUcfWidget(QtWidgets.QWidget):
 
     def _build_editor_panel(self):
         group = QtWidgets.QGroupBox("参数设置")
-        group.setMinimumWidth(420)
+        group.setMinimumWidth(580)
         layout = QtWidgets.QVBoxLayout(group)
         layout.setContentsMargins(12, 18, 12, 12)
         layout.setSpacing(10)
@@ -1123,7 +1117,7 @@ class GenerateUcfWidget(QtWidgets.QWidget):
 def main():
     app = QtWidgets.QApplication(sys.argv)
     widget = GenerateUcfWidget()
-    widget.resize(940, 560)
+    widget.resize(1360, 640)
     widget.show()
     return app.exec_()
 
