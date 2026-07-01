@@ -12,6 +12,12 @@
 - 独立 GUI：`python -m GenerateUcf.widget`
 - 命令行：`python -m GenerateUcf.generate_ucf --profile type1 --output constraints.ucf`
 
+## GUI 资源
+
+- 主界面布局位于 `generate_ucf.ui`，只保存控件层级、布局、文案和基础控件属性。
+- 视觉样式、运行时默认值、信号连接和业务逻辑仍保留在 `widget.py`。
+- 修改或重命名 `.ui` 时，同步更新根目录 GitHub Actions 的 Nuitka data file 清单。
+
 ## 验证
 
 修改后至少运行：

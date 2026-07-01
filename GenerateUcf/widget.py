@@ -4,7 +4,7 @@ import sys
 import traceback
 from pathlib import Path
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 from .core import (
     PROFILE_DIR,
@@ -20,9 +20,11 @@ from .metadata import TOOL_ID, TOOL_NAME
 
 
 PREVIEW_LINES = 80
+UI_PATH = Path(__file__).resolve().parent / "generate_ucf.ui"
 ASSET_DIR = Path(__file__).resolve().parent / "assets"
-COMBO_ARROW_PATH = (ASSET_DIR / "combo_down_arrow.svg").as_posix()
+COMBO_ARROW_PATH = (ASSET_DIR / "arrow-down.png").as_posix()
 SPIN_UP_ARROW_PATH = (ASSET_DIR / "spin_up_arrow.svg").as_posix()
+SPIN_DOWN_ARROW_PATH = (ASSET_DIR / "spin_down_arrow.svg").as_posix()
 SCROLLBAR_STYLE = """
     QScrollBar:vertical {
     width: 8px;
@@ -118,7 +120,6 @@ COMBOBOX_STYLE = """
     image: url("__COMBO_ARROW_PATH__");
     width: 8px;
     height: 6px;
-    margin-right: 7px;
     }
 
     QComboBox QAbstractItemView {
@@ -168,17 +169,19 @@ SPINBOX_STYLE = """
     }
 
     QSpinBox::up-arrow {
-    image: url("C:/Personal/Code/FPGA-tools/GenerateUcf/assets/spin_up_arrow.svg");
+    image: url("__SPIN_UP_ARROW_PATH__");
     width: 8px;
     height: 6px;
     }
 
     QSpinBox::down-arrow {
-    image: url("C:/Personal/Code/FPGA-tools/GenerateUcf/assets/spin_down_arrow.svg");
+    image: url("__SPIN_DOWN_ARROW_PATH__");
     width: 8px;
     height: 6px;
     }
-"""
+""".replace("__SPIN_UP_ARROW_PATH__", SPIN_UP_ARROW_PATH).replace(
+    "__SPIN_DOWN_ARROW_PATH__", SPIN_DOWN_ARROW_PATH
+)
 SECTION_GROUP_STYLE = """
     QGroupBox {
     font-weight: bold;
@@ -219,193 +222,124 @@ class GenerateUcfWidget(QtWidgets.QWidget):
         self._load_profile_choices()
 
     def _build_ui(self):
-        main_layout = QtWidgets.QVBoxLayout(self)
-        main_layout.setContentsMargins(24, 22, 24, 18)
-        main_layout.setSpacing(14)
+        uic.loadUi(str(UI_PATH), self)
+        self._configure_loaded_ui()
 
-        title = QtWidgets.QLabel(TOOL_NAME)
-        title.setObjectName("title")
-
-        top_row = QtWidgets.QHBoxLayout()
-        top_row.setSpacing(8)
-        self.profile_combo = QtWidgets.QComboBox()
-        self._apply_combobox_style(self.profile_combo)
-        self.profile_combo.currentIndexChanged.connect(self._on_profile_selected)
-        self.open_button = QtWidgets.QPushButton("打开JSON")
-        self.reload_button = QtWidgets.QPushButton("重新加载")
-        self.save_button = QtWidgets.QPushButton("保存JSON")
-        self.save_as_button = QtWidgets.QPushButton("另存为")
-        self.open_button.clicked.connect(self._open_profile_file)
-        self.reload_button.clicked.connect(self._reload_current_profile)
-        self.save_button.clicked.connect(self._save_current_profile)
-        self.save_as_button.clicked.connect(self._save_profile_as)
-        top_row.addWidget(QtWidgets.QLabel("Profile"))
-        top_row.addWidget(self.profile_combo, 1)
-        top_row.addWidget(self.open_button)
-        top_row.addWidget(self.reload_button)
-        top_row.addWidget(self.save_button)
-        top_row.addWidget(self.save_as_button)
-
-        body_splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
-        body_splitter.setChildrenCollapsible(False)
-        body_splitter.addWidget(self._build_editor_panel())
-        body_splitter.addWidget(self._build_preview_panel())
-        body_splitter.setStretchFactor(0, 0)
-        body_splitter.setStretchFactor(1, 1)
-        body_splitter.setSizes([600, 760])
-
-        output_row = QtWidgets.QHBoxLayout()
-        output_row.setSpacing(8)
-        self.output_edit = QtWidgets.QLineEdit(str(Path.cwd() / "constraints.ucf"))
-        self.output_edit.setPlaceholderText("选择输出 .ucf 文件")
-        self.output_browse_button = QtWidgets.QPushButton("浏览...")
-        self.generate_button = QtWidgets.QPushButton("生成UCF")
-        self.open_output_button = QtWidgets.QPushButton("打开输出目录")
-        self.open_output_button.setEnabled(False)
-        self.output_browse_button.clicked.connect(self._browse_output)
-        self.generate_button.clicked.connect(self._generate_ucf)
-        self.open_output_button.clicked.connect(self._open_output_dir)
-        output_row.addWidget(QtWidgets.QLabel("输出文件"))
-        output_row.addWidget(self.output_edit, 1)
-        output_row.addWidget(self.output_browse_button)
-        output_row.addWidget(self.generate_button)
-        output_row.addWidget(self.open_output_button)
-
-        self.status_label = QtWidgets.QLabel("")
+    def _configure_loaded_ui(self):
+        self.title.setText(TOOL_NAME)
         self.status_label.setObjectName("statusLabel")
+        self.preview_hint.setObjectName("hintLabel")
+        self.preview_hint.setText("右侧显示前 {count} 行生成结果。".format(count=PREVIEW_LINES))
+        self.output_edit.setText(str(Path.cwd() / "constraints.ucf"))
+        self.output_edit.setPlaceholderText("选择输出 .ucf 文件")
+        self.open_output_button.setEnabled(False)
 
-        main_layout.addWidget(title)
-        main_layout.addLayout(top_row)
-        main_layout.addWidget(body_splitter, 1)
-        main_layout.addLayout(output_row)
-        main_layout.addWidget(self.status_label)
+        self.main_layout.setStretch(0, 0)
+        self.main_layout.setStretch(1, 0)
+        self.main_layout.setStretch(2, 1)
+        self.main_layout.setStretch(3, 0)
+        self.main_layout.setStretch(4, 0)
+        self.body_splitter.setChildrenCollapsible(False)
+        self.body_splitter.setStretchFactor(0, 0)
+        self.body_splitter.setStretchFactor(1, 1)
+        self.body_splitter.setSizes([650, 710])
+        self.top_row.setStretch(1, 1)
+        self.output_row.setStretch(1, 1)
 
-    def _build_editor_panel(self):
-        group = QtWidgets.QGroupBox("参数设置")
-        group.setMinimumWidth(580)
-        layout = QtWidgets.QVBoxLayout(group)
-        layout.setContentsMargins(12, 18, 12, 12)
-        layout.setSpacing(10)
-
-        self.name_edit = QtWidgets.QLineEdit()
-        self.line_mode_combo = QtWidgets.QComboBox()
-        self._apply_combobox_style(self.line_mode_combo)
         self.line_mode_combo.addItems(["single", "paired"])
-        self.path_template_edit = QtWidgets.QLineEdit()
-
-        self.module_kind_combo = QtWidgets.QComboBox()
-        self._apply_combobox_style(self.module_kind_combo)
         self.module_kind_combo.addItems(["range", "list"])
-        self.module_template_edit = QtWidgets.QLineEdit()
-        self.module_start_spin = self._spin(-100000, 100000, 0)
-        self.module_stop_spin = self._spin(-100000, 100000, 1)
-        self.module_range_row = self._two_widget_row(
-            "起始", self.module_start_spin, "结束", self.module_stop_spin
-        )
-        self.module_values_edit = QtWidgets.QPlainTextEdit()
+        self.uxx_kind_combo.addItems(["range", "list"])
+        self.uy_kind_combo.addItems(["range", "list", "none"])
+        self._configure_spinboxes()
         self.module_values_edit.setFixedHeight(70)
         self.module_values_edit.setPlaceholderText("每行一个模块名")
-
-        self.uxx_kind_combo = QtWidgets.QComboBox()
-        self._apply_combobox_style(self.uxx_kind_combo)
-        self.uxx_kind_combo.addItems(["range", "list"])
-        self.uxx_start_spin = self._spin(-100000, 100000, 0)
-        self.uxx_stop_spin = self._spin(-100000, 100000, 31)
-        self.uxx_range_row = self._two_widget_row(
-            "起始", self.uxx_start_spin, "结束", self.uxx_stop_spin
-        )
-        self.uxx_format_edit = QtWidgets.QLineEdit("u%02d")
-        self.uxx_values_edit = QtWidgets.QLineEdit()
+        self.uxx_format_edit.setText("u%02d")
         self.uxx_values_edit.setPlaceholderText("例如 u00,u01,u02")
-
-        self.uy_kind_combo = QtWidgets.QComboBox()
-        self._apply_combobox_style(self.uy_kind_combo)
-        self.uy_kind_combo.addItems(["range", "list", "none"])
-        self.uy_start_spin = self._spin(-100000, 100000, 1)
-        self.uy_stop_spin = self._spin(-100000, 100000, 8)
-        self.uy_range_row = self._two_widget_row(
-            "起始", self.uy_start_spin, "结束", self.uy_stop_spin
-        )
-        self.uy_format_edit = QtWidgets.QLineEdit("u%d")
-        self.uy_values_edit = QtWidgets.QLineEdit()
+        self.uy_format_edit.setText("u%d")
         self.uy_values_edit.setPlaceholderText("例如 A,B,C,D")
+        self.block_a_edit.setText("TestBlockA")
+        self.block_b_edit.setText("TestBlockB")
 
-        self.x_base_spin = self._spin(-100000, 100000, 0)
-        self.x_jump_spin = self._spin(-100000, 100000, 1)
-        self.x_row = self._two_widget_row("起点", self.x_base_spin, "步进", self.x_jump_spin)
-        self.y_slice_spin = self._spin(1, 100000, 80)
-        self.y_jump_spin = self._spin(1, 100000, 1)
-        self.y_row = self._two_widget_row("范围", self.y_slice_spin, "步进", self.y_jump_spin)
-        self.block_a_edit = QtWidgets.QLineEdit("TestBlockA")
-        self.block_b_edit = QtWidgets.QLineEdit("TestBlockB")
-        self.block_b_y_offset_spin = self._spin(-100000, 100000, 0)
-
-        output_group, output_form = self._form_group("输出设置")
-        output_form.addRow("名称", self.name_edit)
-        output_form.addRow("输出模式", self.line_mode_combo)
-        output_form.addRow("路径模板", self.path_template_edit)
-        output_form.addRow("X", self.x_row)
-        output_form.addRow("Y", self.y_row)
-        output_form.addRow("第一列名称", self.block_a_edit)
-        output_form.addRow("第二列名称", self.block_b_edit)
-        output_form.addRow("Y相对偏移", self.block_b_y_offset_spin)
-
-        module_group, module_form = self._form_group("模块")
-        module_form.addRow("类型", self.module_kind_combo)
-        module_form.addRow("模板", self.module_template_edit)
-        module_form.addRow("范围", self.module_range_row)
-        module_form.addRow("列表", self.module_values_edit)
-
-        uxx_group, uxx_form = self._form_group("uxx")
-        uxx_form.addRow("类型", self.uxx_kind_combo)
-        uxx_form.addRow("范围", self.uxx_range_row)
-        uxx_form.addRow("格式", self.uxx_format_edit)
-        uxx_form.addRow("列表", self.uxx_values_edit)
-
-        uy_group, uy_form = self._form_group("uy")
-        uy_form.addRow("类型", self.uy_kind_combo)
-        uy_form.addRow("范围", self.uy_range_row)
-        uy_form.addRow("格式", self.uy_format_edit)
-        uy_form.addRow("列表", self.uy_values_edit)
-
-        form_widget = QtWidgets.QWidget()
-        form_layout = QtWidgets.QVBoxLayout(form_widget)
-        form_layout.setContentsMargins(0, 0, 0, 0)
-        form_layout.setSpacing(10)
-        form_layout.addWidget(output_group)
-        form_layout.addWidget(module_group)
-        form_layout.addWidget(uxx_group)
-        form_layout.addWidget(uy_group)
-        form_layout.addStretch(1)
-        form_scroll = QtWidgets.QScrollArea()
-        form_scroll.setWidgetResizable(True)
-        form_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
-        form_scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        form_scroll.setWidget(form_widget)
-        self._apply_scrollbar_style(form_scroll)
-
-        layout.addWidget(form_scroll, 2)
-        return group
-
-    def _build_preview_panel(self):
-        group = QtWidgets.QGroupBox("输出示例")
-        layout = QtWidgets.QVBoxLayout(group)
-        layout.setContentsMargins(12, 18, 12, 12)
-        layout.setSpacing(8)
-
-        self.preview_edit = QtWidgets.QPlainTextEdit()
         self.preview_edit.setReadOnly(True)
         self.preview_edit.setLineWrapMode(QtWidgets.QPlainTextEdit.NoWrap)
         font = QtGui.QFont("Consolas")
         font.setStyleHint(QtGui.QFont.Monospace)
         self.preview_edit.setFont(font)
-        self._apply_scrollbar_style(self.preview_edit)
 
-        preview_hint = QtWidgets.QLabel("右侧显示前 {count} 行生成结果。".format(count=PREVIEW_LINES))
-        preview_hint.setObjectName("hintLabel")
-        layout.addWidget(preview_hint)
-        layout.addWidget(self.preview_edit, 1)
-        return group
+        for combo in (
+            self.profile_combo,
+            self.line_mode_combo,
+            self.module_kind_combo,
+            self.uxx_kind_combo,
+            self.uy_kind_combo,
+        ):
+            self._apply_combobox_style(combo)
+
+        for spinbox in (
+            self.module_start_spin,
+            self.module_stop_spin,
+            self.uxx_start_spin,
+            self.uxx_stop_spin,
+            self.uy_start_spin,
+            self.uy_stop_spin,
+            self.x_base_spin,
+            self.x_jump_spin,
+            self.y_slice_spin,
+            self.y_jump_spin,
+            self.block_b_y_offset_spin,
+        ):
+            self._apply_spinbox_style(spinbox)
+
+        for group in (
+            self.output_settings_group,
+            self.module_group,
+            self.uxx_group,
+            self.uy_group,
+        ):
+            group.setObjectName("sectionGroup")
+            group.setStyleSheet(SECTION_GROUP_STYLE)
+
+        self._apply_scrollbar_style(self.form_scroll)
+        self._apply_scrollbar_style(self.preview_edit)
+        self._connect_commands()
+
+    def _configure_spinboxes(self):
+        for spinbox in (
+            self.module_start_spin,
+            self.module_stop_spin,
+            self.uxx_start_spin,
+            self.uxx_stop_spin,
+            self.uy_start_spin,
+            self.uy_stop_spin,
+            self.x_base_spin,
+            self.x_jump_spin,
+            self.block_b_y_offset_spin,
+        ):
+            spinbox.setRange(-100000, 100000)
+        for spinbox in (self.y_slice_spin, self.y_jump_spin):
+            spinbox.setRange(1, 100000)
+
+        self.module_start_spin.setValue(0)
+        self.module_stop_spin.setValue(1)
+        self.uxx_start_spin.setValue(0)
+        self.uxx_stop_spin.setValue(31)
+        self.uy_start_spin.setValue(1)
+        self.uy_stop_spin.setValue(8)
+        self.x_base_spin.setValue(0)
+        self.x_jump_spin.setValue(1)
+        self.y_slice_spin.setValue(80)
+        self.y_jump_spin.setValue(1)
+        self.block_b_y_offset_spin.setValue(0)
+
+    def _connect_commands(self):
+        self.profile_combo.currentIndexChanged.connect(self._on_profile_selected)
+        self.open_button.clicked.connect(self._open_profile_file)
+        self.reload_button.clicked.connect(self._reload_current_profile)
+        self.save_button.clicked.connect(self._save_current_profile)
+        self.save_as_button.clicked.connect(self._save_profile_as)
+        self.output_browse_button.clicked.connect(self._browse_output)
+        self.generate_button.clicked.connect(self._generate_ucf)
+        self.open_output_button.clicked.connect(self._open_output_dir)
 
     def apply_visual_style(self):
         self.setStyleSheet("""
@@ -464,7 +398,6 @@ class GenerateUcfWidget(QtWidgets.QWidget):
             }
 
             QLineEdit,
-            QComboBox,
             QSpinBox,
             QPlainTextEdit {
             background-color: #ffffff;
@@ -476,48 +409,17 @@ class GenerateUcfWidget(QtWidgets.QWidget):
             }
 
             QLineEdit:focus,
-            QComboBox:focus,
             QSpinBox:focus,
             QPlainTextEdit:focus {
             border-color: #409eff;
             }
 
             QLineEdit:disabled,
-            QComboBox:disabled,
             QSpinBox:disabled,
             QPlainTextEdit:disabled {
             background-color: #f5f7fa;
             border-color: #e4e7ed;
             color: #909399;
-            }
-
-            QComboBox {
-            padding-right: 26px;
-            }
-
-            QComboBox::drop-down {
-            subcontrol-origin: padding;
-            subcontrol-position: top right;
-            width: 24px;
-            border-left: 1px solid #dcdfe6;
-            border-top-right-radius: 4px;
-            border-bottom-right-radius: 4px;
-            background-color: #f5f7fa;
-            }
-
-            QComboBox::drop-down:hover {
-            background-color: #ecf5ff;
-            border-left-color: #409eff;
-            }
-
-            QComboBox::down-arrow {
-            image: none;
-            width: 0;
-            height: 0;
-            border-left: 4px solid transparent;
-            border-right: 4px solid transparent;
-            border-top: 5px solid #606266;
-            margin-right: 8px;
             }
 
             QSpinBox {
@@ -967,37 +869,6 @@ class GenerateUcfWidget(QtWidgets.QWidget):
             if self.profile_combo.itemData(index) == target:
                 return index
         return -1
-
-    def _spin(self, minimum, maximum, value):
-        widget = QtWidgets.QSpinBox()
-        widget.setRange(minimum, maximum)
-        widget.setValue(value)
-        self._apply_spinbox_style(widget)
-        return widget
-
-    def _form_group(self, title):
-        group = QtWidgets.QGroupBox(title)
-        group.setObjectName("sectionGroup")
-        group.setStyleSheet(SECTION_GROUP_STYLE)
-        form = QtWidgets.QFormLayout(group)
-        form.setLabelAlignment(QtCore.Qt.AlignRight)
-        form.setFormAlignment(QtCore.Qt.AlignTop)
-        form.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
-        form.setHorizontalSpacing(10)
-        form.setVerticalSpacing(8)
-        form.setContentsMargins(12, 18, 12, 12)
-        return group, form
-
-    def _two_widget_row(self, first_label, first_widget, second_label, second_widget):
-        row = QtWidgets.QWidget()
-        layout = QtWidgets.QHBoxLayout(row)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(6)
-        layout.addWidget(QtWidgets.QLabel(first_label))
-        layout.addWidget(first_widget, 1)
-        layout.addWidget(QtWidgets.QLabel(second_label))
-        layout.addWidget(second_widget, 1)
-        return row
 
     def _update_field_states(self):
         module_is_range = self.module_kind_combo.currentText() == "range"

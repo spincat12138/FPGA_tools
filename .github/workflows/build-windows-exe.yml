@@ -65,6 +65,7 @@ jobs:
             --include-package=create_project `
             --include-package=config_board_v2 `
             --include-package=GenerateUcf `
+            --include-data-files=GenerateUcf/generate_ucf.ui=GenerateUcf/generate_ucf.ui `
             --include-data-dir=GenerateUcf/profiles=GenerateUcf/profiles `
             --include-data-dir=GenerateUcf/assets=GenerateUcf/assets `
             main.py
