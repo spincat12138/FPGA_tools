@@ -1,16 +1,105 @@
 # -*- coding: utf-8 -*-
+import datetime
 import importlib
+import os
 import sys
 import traceback
 from pathlib import Path
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-
-from common.services import ToolServices
-from tools_registry import TOOLS
-
-
 APP_NAME = "FPGA 工具集合"
+LOG_DIR_NAME = "FPGA-tools"
+
+
+def _startup_log_dir():
+    candidates = [
+        os.environ.get("LOCALAPPDATA"),
+        os.environ.get("APPDATA"),
+        os.environ.get("TEMP"),
+    ]
+    for base_dir in candidates:
+        if not base_dir:
+            continue
+        try:
+            log_dir = Path(base_dir) / LOG_DIR_NAME
+            log_dir.mkdir(parents=True, exist_ok=True)
+            return log_dir
+        except OSError:
+            continue
+    return None
+
+
+def _write_startup_error(title, detail):
+    log_dir = _startup_log_dir()
+    if log_dir is None:
+        return None
+
+    log_path = log_dir / "startup-error.log"
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        with log_path.open("a", encoding="utf-8") as handle:
+            handle.write("[{timestamp}] {title}\n".format(timestamp=timestamp, title=title))
+            handle.write(detail.rstrip())
+            handle.write("\n\n")
+        return log_path
+    except OSError:
+        return None
+
+
+def _startup_error_message(summary, log_path=None):
+    message = summary
+    if log_path is not None:
+        message += "\n\n详细日志：{path}".format(path=log_path)
+    return message
+
+
+def _show_native_startup_error(title, summary, log_path=None):
+    message = _startup_error_message(summary, log_path)
+    try:
+        import ctypes
+
+        ctypes.windll.user32.MessageBoxW(None, message, title, 0x10)
+    except Exception:
+        sys.stderr.write("{title}\n{message}\n".format(title=title, message=message))
+
+
+try:
+    from PyQt5 import QtCore, QtGui, QtWidgets
+
+    from common.services import ToolServices
+    from tools_registry import TOOLS
+except Exception:
+    error_detail = traceback.format_exc()
+    error_log_path = _write_startup_error("程序启动失败", error_detail)
+    _show_native_startup_error(
+        "程序启动失败",
+        "程序启动时发生错误，可能是运行库、Qt 组件或打包依赖缺失。",
+        error_log_path,
+    )
+    raise SystemExit(1)
+
+
+def _show_qt_startup_error(title, summary, log_path=None):
+    if QtWidgets.QApplication.instance() is None:
+        _show_native_startup_error(title, summary, log_path)
+        return
+
+    message = _startup_error_message(summary, log_path)
+    try:
+        QtWidgets.QMessageBox.critical(None, title, message)
+    except Exception:
+        _show_native_startup_error(title, summary, log_path)
+
+
+def _handle_unhandled_exception(exc_type, exc, tb):
+    detail = "".join(traceback.format_exception(exc_type, exc, tb))
+    log_path = _write_startup_error("程序发生未处理错误", detail)
+    _show_qt_startup_error(
+        "程序发生错误",
+        "程序运行时发生未处理错误，已记录详细日志。",
+        log_path,
+    )
+
+
 ROOT_DIR = Path(__file__).resolve().parent
 DEFAULT_TOOL_SIZE = QtCore.QSize(900, 640)
 MIN_REASONABLE_TOOL_SIZE = QtCore.QSize(120, 80)
@@ -572,6 +661,7 @@ class MainWindow(QtWidgets.QMainWindow):
 def main():
     QtCore.QCoreApplication.setOrganizationName("FPGA-tools")
     QtCore.QCoreApplication.setApplicationName(APP_NAME)
+    sys.excepthook = _handle_unhandled_exception
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
@@ -579,4 +669,16 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except SystemExit:
+        raise
+    except Exception:
+        error_detail = traceback.format_exc()
+        error_log_path = _write_startup_error("程序启动失败", error_detail)
+        _show_qt_startup_error(
+            "程序启动失败",
+            "程序启动时发生错误，已记录详细日志。",
+            error_log_path,
+        )
+        sys.exit(1)
