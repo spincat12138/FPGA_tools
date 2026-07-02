@@ -75,6 +75,7 @@ jobs:
             --include-data-files=RBT2ATP/logo.ico=RBT2ATP/logo.ico `
             --include-data-files=RBT2ATP/presets.json=RBT2ATP/presets.json `
             --include-package-data=RBT2ATP `
+            --include-module=RBT2ATP.rbt2atp_gui `
             --include-package=RBT2ATP `
             --include-package=rbt_file_organization `
             --include-package=rbt_bit_converter `

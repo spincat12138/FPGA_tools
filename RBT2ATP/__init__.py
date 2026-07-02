@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from importlib import import_module
-
 from PyQt5 import QtCore
+
+from .rbt2atp_gui import RBT2ATP
 
 
 TOOL_ID = "rbt2atp"
@@ -9,8 +9,7 @@ TOOL_NAME = "RBT转ATP"
 
 
 def create_widget(parent=None, services=None):
-    module = import_module(".rbt2atp_gui", __name__)
-    widget = module.RBT2ATP(parent=parent)
+    widget = RBT2ATP(parent=parent)
     widget.setWindowFlags(QtCore.Qt.Widget)
     widget.setWindowTitle(TOOL_NAME)
     return widget
