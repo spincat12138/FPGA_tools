@@ -48,7 +48,7 @@ jobs:
       - name: Syntax check
         run: |
           python -m py_compile main.py tools_registry.py common/services.py
-          python -m py_compile RBT2ATP/RBT2ATP软件.py RBT2ATP/__init__.py
+          python -m py_compile RBT2ATP/rbt2atp_gui.py RBT2ATP/__init__.py
           python -m py_compile rbt_file_organization/core.py rbt_file_organization/widget.py rbt_file_organization/__init__.py
           python -m py_compile rbt_bit_converter/rbt2bit.py rbt_bit_converter/bit2rbt.py rbt_bit_converter/widget.py rbt_bit_converter/__init__.py
           python -m py_compile RBT2VCD/rbt2vcd.py RBT2VCD/widget.py RBT2VCD/__init__.py
