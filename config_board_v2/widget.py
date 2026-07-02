@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Callable, Iterable, Optional
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 try:
     from . import usbtest_py as core
@@ -16,6 +16,7 @@ except ImportError:  # pragma: no cover - supports direct script execution.
 
 TOOL_ID = "config_board_v2"
 TOOL_NAME = "配置板烧写程序-V2"
+UI_PATH = Path(__file__).resolve().parent / "config_board_v2.ui"
 COMPARE_OUTPUT_NAME = "compare.txt"
 CONFIG_FILTERS = (
     "bit/rbt/b files (*.bit *.rbt *.b);;"
@@ -77,119 +78,29 @@ class ConfigBoardWidget(QtWidgets.QWidget):
         self._refresh_action_states(running=False)
 
     def _build_ui(self):
-        main_layout = QtWidgets.QVBoxLayout(self)
-        main_layout.setContentsMargins(24, 22, 24, 18)
-        main_layout.setSpacing(14)
+        uic.loadUi(str(UI_PATH), self)
+        self._configure_loaded_ui()
 
-        title = QtWidgets.QLabel(TOOL_NAME)
-        title.setObjectName("title")
+    def _configure_loaded_ui(self):
+        self.title.setText(TOOL_NAME)
+        self.title.setObjectName("title")
+        self.status1_label.setObjectName("statusText")
+        self.status2_label.setObjectName("statusText")
+        self.alarm_indicator.setObjectName("alarmIndicator")
 
-        top_row = QtWidgets.QHBoxLayout()
-        top_row.setSpacing(8)
-        device_label = QtWidgets.QLabel("器件选型")
-        self.device_combo = QtWidgets.QComboBox()
         self.device_combo.addItems(list(core.DEVICE_BY_NAME.keys()))
         self.device_combo.setCurrentText("BQ2V1000")
-        erase_label = QtWidgets.QLabel("擦除地址")
-        self.erase_address_edit = QtWidgets.QLineEdit()
-        self.erase_address_edit.setPlaceholderText("例如 1")
-        self.erase_button = QtWidgets.QPushButton("擦除")
-        self.convert_button = QtWidgets.QPushButton("码流转换工具")
+        self.open_compare_button.setEnabled(self._compare_output_path().exists())
+
         self.erase_button.clicked.connect(self.erase_address)
         self.convert_button.clicked.connect(self.convert_streams)
-        top_row.addWidget(device_label)
-        top_row.addWidget(self.device_combo)
-        top_row.addSpacing(16)
-        top_row.addWidget(erase_label)
-        top_row.addWidget(self.erase_address_edit)
-        top_row.addWidget(self.erase_button)
-
-        usb_row = QtWidgets.QHBoxLayout()
-        usb_row.setSpacing(8)
-        usb_label = QtWidgets.QLabel("USB设备状态")
-        self.usb_status_edit = QtWidgets.QLineEdit("USB设备已拔出!")
-        self.usb_status_edit.setReadOnly(True)
-        self.open_button = QtWidgets.QPushButton("打开设备")
-        self.close_button = QtWidgets.QPushButton("关闭设备")
-        self.alarm_indicator = QtWidgets.QFrame()
-        self.alarm_indicator.setObjectName("alarmIndicator")
-        self.alarm_indicator.setFixedSize(28, 28)
         self.open_button.clicked.connect(self.open_device)
         self.close_button.clicked.connect(self.close_device)
-        usb_row.addWidget(usb_label)
-        usb_row.addWidget(self.usb_status_edit, 1)
-        usb_row.addWidget(self.open_button)
-        usb_row.addWidget(self.close_button)
-        usb_row.addWidget(self.alarm_indicator)
-        usb_row.addWidget(self.convert_button)
-        usb_row.addStretch(1)
-
-        work_layout = QtWidgets.QHBoxLayout()
-        work_layout.setSpacing(18)
-
-        config_group = QtWidgets.QGroupBox("配置")
-        config_group.setObjectName("configGroup")
-        config_layout = QtWidgets.QVBoxLayout(config_group)
-        config_layout.setContentsMargins(12, 18, 12, 12)
-        config_layout.setSpacing(10)
-        config_button_row = QtWidgets.QHBoxLayout()
-        self.config_button = QtWidgets.QPushButton("配置")
         self.config_button.clicked.connect(self.configure_files)
-        config_button_row.addStretch(1)
-        config_button_row.addWidget(self.config_button)
-        self.config_text = QtWidgets.QPlainTextEdit()
-        self.config_text.setReadOnly(True)
-        self.config_text.setPlaceholderText("已选择的配置码流文件会显示在这里")
-        config_layout.addLayout(config_button_row)
-        config_layout.addWidget(self.config_text, 1)
-
-        read_group = QtWidgets.QGroupBox("回读")
-        read_group.setObjectName("readGroup")
-        read_layout = QtWidgets.QVBoxLayout(read_group)
-        read_layout.setContentsMargins(12, 18, 12, 12)
-        read_layout.setSpacing(10)
-        read_address_row = QtWidgets.QHBoxLayout()
-        read_address_label = QtWidgets.QLabel("地址选择")
-        self.read_address_edit = QtWidgets.QLineEdit()
-        self.read_address_edit.setPlaceholderText("例如 1")
-        read_address_row.addWidget(read_address_label)
-        read_address_row.addWidget(self.read_address_edit, 1)
-        self.verify_after_read_checkbox = QtWidgets.QCheckBox("与配置码流验证")
-        self.verify_after_read_checkbox.setChecked(True)
-        self.readback_button = QtWidgets.QPushButton("ReadBack")
-        self.verify_button = QtWidgets.QPushButton("回读验证")
-        self.open_compare_button = QtWidgets.QPushButton("打开验证结果")
-        self.open_compare_button.setEnabled(self._compare_output_path().exists())
         self.readback_button.clicked.connect(self.readback_to_file)
         self.verify_button.clicked.connect(self.verify_files)
         self.open_compare_button.clicked.connect(self.open_compare_result)
-        read_layout.addLayout(read_address_row)
-        read_layout.addWidget(self.verify_after_read_checkbox)
-        read_layout.addWidget(self.readback_button)
-        read_layout.addWidget(self.verify_button)
-        read_layout.addWidget(self.open_compare_button)
-        read_layout.addStretch(1)
-
-        work_layout.addWidget(config_group, 2)
-        work_layout.addWidget(read_group, 1)
-
-        status_row = QtWidgets.QHBoxLayout()
-        status_row.setSpacing(8)
-        self.status1_label = QtWidgets.QLabel("状态栏")
-        self.status1_label.setObjectName("statusText")
-        self.status2_label = QtWidgets.QLabel("")
-        self.status2_label.setObjectName("statusText")
-        self.clear_status_button = QtWidgets.QPushButton("清空状态")
         self.clear_status_button.clicked.connect(lambda: self.set_status("状态栏", ""))
-        status_row.addWidget(self.status1_label, 1)
-        status_row.addWidget(self.status2_label, 2)
-        status_row.addWidget(self.clear_status_button)
-
-        main_layout.addWidget(title)
-        main_layout.addLayout(top_row)
-        main_layout.addLayout(usb_row)
-        main_layout.addLayout(work_layout, 1)
-        main_layout.addLayout(status_row)
 
     def apply_visual_style(self):
         self.setStyleSheet("""

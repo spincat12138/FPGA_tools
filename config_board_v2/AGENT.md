@@ -17,6 +17,7 @@
 config_board_v2/
   AGENT.md
   __init__.py
+  config_board_v2.ui
   usbtest_py.py
   usbtest_gui.py
   widget.py
@@ -25,7 +26,8 @@ config_board_v2/
 ```
 
 - `usbtest_py.py` 保存 FTDI 通信、设备握手、擦除、写入、回读、验证和码流转换核心逻辑。
-- `widget.py` 保存 PyQt5 界面、信号槽、后台线程和 `ToolServices` 交互。
+- `config_board_v2.ui` 是 Qt Designer 布局源文件，运行时由 `widget.py` 通过 `uic.loadUi()` 直接加载。
+- `widget.py` 保存 PyQt5 样式、信号槽、后台线程和 `ToolServices` 交互。
 - `usbtest_gui.py` 保留独立运行入口，并复用 `widget.py` 中的同一套 PyQt5 界面。
 
 ## 业务规则
@@ -42,6 +44,8 @@ config_board_v2/
 ## GUI 维护约定
 
 - 界面风格应与主界面和其他 PyQt5 子工具保持一致：浅灰背景、白色输入/文本区域、蓝色主按钮、4px 圆角。
+- 主界面布局位于 `config_board_v2.ui`，只保存控件层级、布局、文案和基础控件属性。
+- 修改或重命名 `.ui` 时，同步更新根目录 GitHub Actions 的 Nuitka data file 清单。
 - 不再引入或维护 Tkinter 界面；独立运行也必须使用 `PyQt5`。
 - 耗时 USB 和文件操作必须放到后台线程，避免阻塞主界面。
 - 需要日志、弹窗和忙碌状态时优先使用主界面传入的 `ToolServices`。

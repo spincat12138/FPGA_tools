@@ -82,6 +82,7 @@ jobs:
             --include-package=RBT2VCD `
             --include-package=create_project `
             --include-package=config_board_v2 `
+            --include-data-files=config_board_v2/config_board_v2.ui=config_board_v2/config_board_v2.ui `
             --include-package=GenerateUcf `
             --include-data-files=GenerateUcf/generate_ucf.ui=GenerateUcf/generate_ucf.ui `
             --include-data-dir=GenerateUcf/profiles=GenerateUcf/profiles `
