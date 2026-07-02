@@ -45,6 +45,10 @@ jobs:
           python -c "import platform, struct; print(platform.platform()); print(str(struct.calcsize('P') * 8) + '-bit Python')"
           python -m pip freeze
 
+      - name: Validate Python filenames
+        run: |
+          python -c "from pathlib import Path; bad=[str(p) for p in Path('.').rglob('*.py') if any(ord(ch)>127 for ch in str(p))]; print('Non-ASCII Python filenames:' if bad else 'Python filenames OK'); print('\n'.join(bad)); raise SystemExit(1 if bad else 0)"
+
       - name: Syntax check
         run: |
           python -m py_compile main.py tools_registry.py common/services.py

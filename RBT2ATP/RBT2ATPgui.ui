@@ -14,1399 +14,1497 @@
    <string>RBT转ATP软件</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="title">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>30</y>
-      <width>201</width>
-      <height>31</height>
-     </rect>
+   <layout class="QVBoxLayout" name="verticalLayout_main">
+    <property name="leftMargin">
+     <number>28</number>
     </property>
-    <property name="font">
-     <font>
-      <family>黑体</family>
-      <pointsize>20</pointsize>
-      <underline>false</underline>
-      <stylestrategy>PreferDefault</stylestrategy>
-      <kerning>true</kerning>
-     </font>
-    </property>
-    <property name="cursor">
-     <cursorShape>ArrowCursor</cursorShape>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <property name="text">
-     <string>RBT转ATP软件</string>
-    </property>
-   </widget>
-   <widget class="QTableWidget" name="tableWidget">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>170</y>
-      <width>711</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <property name="autoScrollMargin">
+    <property name="topMargin">
      <number>16</number>
     </property>
-    <attribute name="horizontalHeaderDefaultSectionSize">
-     <number>70</number>
-    </attribute>
-    <attribute name="horizontalHeaderMinimumSectionSize">
-     <number>31</number>
-    </attribute>
-    <attribute name="verticalHeaderDefaultSectionSize">
-     <number>30</number>
-    </attribute>
-    <row>
-     <property name="text">
-      <string>初始1</string>
-     </property>
-    </row>
-    <row>
-     <property name="text">
-      <string>初始2</string>
-     </property>
-    </row>
-    <row>
-     <property name="text">
-      <string>复位1</string>
-     </property>
-    </row>
-    <row>
-     <property name="text">
-      <string>复位2</string>
-     </property>
-    </row>
-    <row>
-     <property name="text">
-      <string>等待1</string>
-     </property>
-    </row>
-    <row>
-     <property name="text">
-      <string>等待2</string>
-     </property>
-    </row>
-    <row>
-     <property name="text">
-      <string>等待3</string>
-     </property>
-    </row>
-    <row>
-     <property name="text">
-      <string>配置</string>
-     </property>
-    </row>
-    <row>
-     <property name="text">
-      <string>结束</string>
-     </property>
-    </row>
-    <column>
-     <property name="text">
-      <string>REPEAT</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>CCLK</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>CSI</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>RDWR</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>PROG</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>INIT</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>DONE</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>MODE</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>PUDC</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>BVS</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>POR</string>
-     </property>
-    </column>
-    <item row="0" column="0">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="0" column="1">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="0" column="2">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="0" column="3">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="0" column="4">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="0" column="5">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="0" column="6">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="0" column="7">
-     <property name="text">
-      <string>110</string>
-     </property>
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="background">
-      <brush brushstyle="NoBrush">
-       <color alpha="255">
-        <red>170</red>
-        <green>255</green>
-        <blue>255</blue>
-       </color>
-      </brush>
-     </property>
-     <property name="foreground">
-      <brush brushstyle="NoBrush">
-       <color alpha="255">
-        <red>0</red>
-        <green>0</green>
-        <blue>0</blue>
-       </color>
-      </brush>
-     </property>
-    </item>
-    <item row="0" column="8">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="0" column="9">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="0" column="10">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="0">
-     <property name="text">
-      <string>1000</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="1">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="2">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="3">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="4">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="5">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="6">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="7">
-     <property name="text">
-      <string>110</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="8">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="9">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="1" column="10">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="0">
-     <property name="text">
-      <string>1000</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="1">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="2">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="3">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="4">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="5">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="6">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="7">
-     <property name="text">
-      <string>110</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="8">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="9">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="2" column="10">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="0">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="1">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="2">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="3">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="4">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="5">
-     <property name="text">
-      <string>L</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="6">
-     <property name="text">
-      <string>L</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="7">
-     <property name="text">
-      <string>110</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="8">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="9">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="3" column="10">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="0">
-     <property name="text">
-      <string>60000</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="1">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="2">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="3">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="4">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="5">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="6">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="7">
-     <property name="text">
-      <string>110</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="8">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="9">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="4" column="10">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="5" column="0">
-     <property name="text">
-      <string>1000</string>
-     </property>
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="background">
-      <brush brushstyle="NoBrush">
-       <color alpha="255">
-        <red>97</red>
-        <green>145</green>
-        <blue>0</blue>
-       </color>
-      </brush>
-     </property>
-     <property name="foreground">
-      <brush brushstyle="NoBrush">
-       <color alpha="255">
-        <red>0</red>
-        <green>0</green>
-        <blue>0</blue>
-       </color>
-      </brush>
-     </property>
-    </item>
-    <item row="5" column="1">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="5" column="2">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="5" column="3">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="5" column="4">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="5" column="5">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="5" column="6">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="5" column="7">
-     <property name="text">
-      <string>110</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="5" column="8">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="5" column="9">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="5" column="10">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="6" column="0">
-     <property name="text">
-      <string>1000</string>
-     </property>
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="background">
-      <brush brushstyle="NoBrush">
-       <color alpha="255">
-        <red>97</red>
-        <green>145</green>
-        <blue>0</blue>
-       </color>
-      </brush>
-     </property>
-     <property name="foreground">
-      <brush brushstyle="NoBrush">
-       <color alpha="255">
-        <red>0</red>
-        <green>0</green>
-        <blue>0</blue>
-       </color>
-      </brush>
-     </property>
-    </item>
-    <item row="6" column="1">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="6" column="2">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="6" column="3">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="6" column="4">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="6" column="5">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="6" column="6">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="6" column="7">
-     <property name="text">
-      <string>110</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="6" column="8">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="6" column="9">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="6" column="10">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="0">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="1">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="2">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="3">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="4">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="5">
-     <property name="text">
-      <string>H</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="6">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="7">
-     <property name="text">
-      <string>110</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="8">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="9">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="7" column="10">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="8" column="0">
-     <property name="text">
-      <string>6</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="8" column="1">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="8" column="2">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="8" column="3">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="8" column="4">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="8" column="5">
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-    </item>
-    <item row="8" column="6">
-     <property name="text">
-      <string>H</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="8" column="7">
-     <property name="text">
-      <string>110</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="8" column="8">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="8" column="9">
-     <property name="text">
-      <string>0</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-    <item row="8" column="10">
-     <property name="text">
-      <string>1</string>
-     </property>
-     <property name="flags">
-      <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-     </property>
-    </item>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>440</y>
-      <width>331</width>
-      <height>21</height>
-     </rect>
+    <property name="rightMargin">
+     <number>28</number>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
-      <widget class="QRadioButton" name="radioButton_singleRbt">
-       <property name="text">
-        <string>单个rbt转换</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButton_multiRbt">
-       <property name="text">
-        <string>批量rbt转换</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>650</y>
-      <width>601</width>
-      <height>25</height>
-     </rect>
+    <property name="bottomMargin">
+     <number>14</number>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <item>
-      <widget class="QLabel" name="label_pBar">
-       <property name="text">
-        <string>进度条</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QProgressBar" name="pBar">
-       <property name="value">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>510</y>
-      <width>671</width>
-      <height>134</height>
-     </rect>
+    <property name="spacing">
+     <number>8</number>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_6">
-     <item>
-      <widget class="QLabel" name="label_statusBar">
-       <property name="styleSheet">
-        <string notr="true">font: 16pt &quot;微软雅黑&quot;;</string>
+    <item alignment="Qt::AlignHCenter">
+     <widget class="QLabel" name="title">
+      <property name="font">
+       <font>
+        <family>黑体</family>
+        <pointsize>20</pointsize>
+        <underline>false</underline>
+        <stylestrategy>PreferDefault</stylestrategy>
+        <kerning>true</kerning>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>ArrowCursor</cursorShape>
+      </property>
+      <property name="styleSheet">
+       <string notr="true" />
+      </property>
+      <property name="text">
+       <string>RBT转ATP软件</string>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_configLine">
+      <property name="spacing">
+       <number>12</number>
+      </property>
+      <item>
+       <spacer name="horizontalSpacer_configLeft">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QWidget" name="layoutWidget">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label_cfgMode">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>配置模式</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_x32">
+           <property name="text">
+            <string>x32</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_x16">
+           <property name="text">
+            <string>x16</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_x8">
+           <property name="text">
+            <string>x8</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_x1">
+           <property name="text">
+            <string>x1</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_configRight">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_modeLine">
+      <property name="spacing">
+       <number>14</number>
+      </property>
+      <item>
+       <spacer name="horizontalSpacer_modeLeft">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QWidget" name="layoutWidget">
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLabel" name="label_cfgMode_2">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Vector Mode</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_vector">
+           <item>
+            <property name="text">
+             <string>vm_vector</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>vector</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="layoutWidget">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_cfgMode_3">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Timing Mode</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_mod_choose">
+           <item>
+            <property name="text">
+             <string>quad</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>normal</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>extend</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBox_vector_2">
+        <item>
+         <property name="text">
+          <string>100万门256</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>V2其余</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>U+</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_modeRight">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QGridLayout" name="horizontalLayout_3">
+       <property name="horizontalSpacing">
+        <number>16</number>
        </property>
+       <property name="verticalSpacing">
+        <number>6</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="checkBox_CCLK">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>CCLK</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="checkBox_CSI">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>CSI</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QCheckBox" name="checkBox_RDWR">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>RDWR</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QCheckBox" name="checkBox_PROG">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>PROG</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QCheckBox" name="checkBox_INIT">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>INIT</string>
+         </property>
+        </widget>
+       </item>
+        <item row="0" column="5">
+        <widget class="QCheckBox" name="checkBox_DONE">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>DONE</string>
+         </property>
+        </widget>
+       </item>
+        <item row="0" column="6">
+        <widget class="QCheckBox" name="checkBox_MODE">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>MODE</string>
+         </property>
+        </widget>
+       </item>
+        <item row="0" column="7">
+        <widget class="QCheckBox" name="checkBox_PUDC">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>PUDC</string>
+         </property>
+        </widget>
+       </item>
+        <item row="0" column="8">
+        <widget class="QCheckBox" name="checkBox_BVS">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>BVS</string>
+         </property>
+        </widget>
+       </item>
+        <item row="0" column="9">
+        <widget class="QCheckBox" name="checkBox_POR">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>POR</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="tableWidget">
+      <property name="autoScrollMargin">
+       <number>16</number>
+      </property>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>70</number>
+      </attribute>
+      <attribute name="horizontalHeaderMinimumSectionSize">
+       <number>31</number>
+      </attribute>
+      <attribute name="verticalHeaderDefaultSectionSize">
+       <number>30</number>
+      </attribute>
+      <row>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;状&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;态&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;栏&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>初始1</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTextBrowser" name="textBrowser_statusBar"/>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>470</y>
-      <width>581</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_7">
-     <item>
-      <widget class="QLabel" name="label_openFile">
+      </row>
+      <row>
        <property name="text">
-        <string>RBT文件(夹)</string>
+        <string>初始2</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="lineEdit_openFile"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_openFile">
+      </row>
+      <row>
        <property name="text">
-        <string>打开</string>
+        <string>复位1</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_exchange">
+      </row>
+      <row>
        <property name="text">
-        <string>转换</string>
+        <string>复位2</string>
        </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>80</y>
-      <width>461</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="label_cfgMode">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
+      </row>
+      <row>
        <property name="text">
-        <string>配置模式</string>
+        <string>等待1</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButton_x32">
+      </row>
+      <row>
        <property name="text">
-        <string>x32</string>
+        <string>等待2</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButton_x16">
+      </row>
+      <row>
        <property name="text">
-        <string>x16</string>
+        <string>等待3</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButton_x8">
+      </row>
+      <row>
        <property name="text">
-        <string>x8</string>
+        <string>配置</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButton_x1">
+      </row>
+      <row>
        <property name="text">
-        <string>x1</string>
+        <string>结束</string>
        </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>144</y>
-      <width>631</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QCheckBox" name="checkBox_CCLK">
-       <property name="enabled">
-        <bool>true</bool>
+      </row>
+      <column>
+       <property name="text">
+        <string>REPEAT</string>
        </property>
+      </column>
+      <column>
        <property name="text">
         <string>CCLK</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_CSI">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      </column>
+      <column>
        <property name="text">
         <string>CSI</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_RDWR">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      </column>
+      <column>
        <property name="text">
         <string>RDWR</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_PROG">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      </column>
+      <column>
        <property name="text">
         <string>PROG</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_INIT">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      </column>
+      <column>
        <property name="text">
         <string>INIT</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_DONE">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      </column>
+      <column>
        <property name="text">
         <string>DONE</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_MODE">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      </column>
+      <column>
        <property name="text">
         <string>MODE</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_PUDC">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      </column>
+      <column>
        <property name="text">
         <string>PUDC</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_BVS">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      </column>
+      <column>
        <property name="text">
         <string>BVS</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_POR">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      </column>
+      <column>
        <property name="text">
         <string>POR</string>
        </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>110</y>
-      <width>210</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_8">
-     <item>
-      <widget class="QLabel" name="label_cfgMode_2">
+      </column>
+      <item row="0" column="0">
+       <property name="text">
+        <string />
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="0" column="1">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="0" column="2">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="0" column="3">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="0" column="4">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="0" column="5">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="0" column="6">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="0" column="7">
+       <property name="text">
+        <string>110</string>
+       </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
-       <property name="text">
-        <string>Vector Mode</string>
+       <property name="background">
+        <brush brushstyle="NoBrush">
+         <color alpha="255">
+          <red>170</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBox_vector">
-       <item>
-        <property name="text">
-         <string>vm_vector</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>vector</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>360</x>
-      <y>110</y>
-      <width>187</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QLabel" name="label_cfgMode_3">
+       <property name="foreground">
+        <brush brushstyle="NoBrush">
+         <color alpha="255">
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </property>
+      </item>
+      <item row="0" column="8">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="0" column="9">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="0" column="10">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="0">
+       <property name="text">
+        <string>1000</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="1">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="2">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="3">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="4">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="5">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="6">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="7">
+       <property name="text">
+        <string>110</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="8">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="9">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="1" column="10">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="0">
+       <property name="text">
+        <string>1000</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="1">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="2">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="3">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="4">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="5">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="6">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="7">
+       <property name="text">
+        <string>110</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="8">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="9">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="2" column="10">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="0">
+       <property name="text">
+        <string />
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="1">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="2">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="3">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="4">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="5">
+       <property name="text">
+        <string>L</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="6">
+       <property name="text">
+        <string>L</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="7">
+       <property name="text">
+        <string>110</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="8">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="9">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="3" column="10">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="0">
+       <property name="text">
+        <string>60000</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="1">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="2">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="3">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="4">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="5">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="6">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="7">
+       <property name="text">
+        <string>110</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="8">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="9">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="4" column="10">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="5" column="0">
+       <property name="text">
+        <string>1000</string>
+       </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
-       <property name="text">
-        <string>Timing Mode</string>
+       <property name="background">
+        <brush brushstyle="NoBrush">
+         <color alpha="255">
+          <red>97</red>
+          <green>145</green>
+          <blue>0</blue>
+         </color>
+        </brush>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBox_mod_choose">
-       <item>
-        <property name="text">
-         <string>quad</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>normal</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>extend</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QComboBox" name="comboBox_vector_2">
-    <property name="geometry">
-     <rect>
-      <x>597</x>
-      <y>109</y>
-      <width>150</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <item>
-     <property name="text">
-      <string>100万门256</string>
-     </property>
+       <property name="foreground">
+        <brush brushstyle="NoBrush">
+         <color alpha="255">
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </property>
+      </item>
+      <item row="5" column="1">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="5" column="2">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="5" column="3">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="5" column="4">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="5" column="5">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="5" column="6">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="5" column="7">
+       <property name="text">
+        <string>110</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="5" column="8">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="5" column="9">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="5" column="10">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="6" column="0">
+       <property name="text">
+        <string>1000</string>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="background">
+        <brush brushstyle="NoBrush">
+         <color alpha="255">
+          <red>97</red>
+          <green>145</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </property>
+       <property name="foreground">
+        <brush brushstyle="NoBrush">
+         <color alpha="255">
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </property>
+      </item>
+      <item row="6" column="1">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="6" column="2">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="6" column="3">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="6" column="4">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="6" column="5">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="6" column="6">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="6" column="7">
+       <property name="text">
+        <string>110</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="6" column="8">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="6" column="9">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="6" column="10">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="0">
+       <property name="text">
+        <string />
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="1">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="2">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="3">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="4">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="5">
+       <property name="text">
+        <string>H</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="6">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="7">
+       <property name="text">
+        <string>110</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="8">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="9">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="7" column="10">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="8" column="0">
+       <property name="text">
+        <string>6</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="8" column="1">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="8" column="2">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="8" column="3">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="8" column="4">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="8" column="5">
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+      </item>
+      <item row="8" column="6">
+       <property name="text">
+        <string>H</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="8" column="7">
+       <property name="text">
+        <string>110</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="8" column="8">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="8" column="9">
+       <property name="text">
+        <string>0</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <item row="8" column="10">
+       <property name="text">
+        <string>1</string>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+       </property>
+      </item>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>620</width>
+        <height>200</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item>
-     <property name="text">
-      <string>V2其余</string>
-     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_convertModeLine">
+      <property name="spacing">
+       <number>12</number>
+      </property>
+      <item>
+       <spacer name="horizontalSpacer_convertLeft">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QWidget" name="layoutWidget">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QRadioButton" name="radioButton_singleRbt">
+           <property name="text">
+            <string>单个rbt转换</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_multiRbt">
+           <property name="text">
+            <string>批量rbt转换</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_convertRight">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
     <item>
-     <property name="text">
-      <string>U+</string>
-     </property>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <item>
+        <widget class="QLabel" name="label_openFile">
+         <property name="text">
+          <string>RBT文件(夹)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_openFile" />
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_openFile">
+         <property name="text">
+          <string>打开</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_exchange">
+         <property name="text">
+          <string>转换</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
     </item>
-   </widget>
+    <item>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QLabel" name="label_statusBar">
+         <property name="styleSheet">
+          <string notr="true">font: 16pt "微软雅黑";</string>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;状&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;态&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;栏&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="textBrowser_statusBar" />
+       </item>
+      </layout>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>620</width>
+        <height>80</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QLabel" name="label_pBar">
+         <property name="text">
+          <string>进度条</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QProgressBar" name="pBar">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
  </widget>
  <tabstops>
   <tabstop>radioButton_x32</tabstop>
@@ -1431,6 +1529,6 @@
   <tabstop>pushButton_exchange</tabstop>
   <tabstop>textBrowser_statusBar</tabstop>
  </tabstops>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

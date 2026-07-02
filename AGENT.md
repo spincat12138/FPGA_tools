@@ -197,7 +197,7 @@ class ToolServices:
 
 | TOOL_ID | 导航名称 | 目录 | 子工具文档 | 独立运行入口 | 主界面接入入口 |
 | --- | --- | --- | --- | --- | --- |
-| `rbt2atp` | RBT 转 ATP | `RBT2ATP/` | `RBT2ATP/AGENT.md` | `RBT2ATP/RBT2ATP软件.py` | `RBT2ATP.create_widget` |
+| `rbt2atp` | RBT 转 ATP | `RBT2ATP/` | `RBT2ATP/AGENT.md` | `RBT2ATP/rbt2atp_gui.py` | `RBT2ATP.create_widget` |
 | `rbt_file_organization` | RBT文件整理 | `rbt_file_organization/` | `rbt_file_organization/AGENT.md` | `rbt_file_organization/rbt_file_organization.py` | `rbt_file_organization.create_widget` |
 | `rbt_bit_converter` | RBT/BIT互转 | `rbt_bit_converter/` | `rbt_bit_converter/AGENT.md` | `rbt_bit_converter/rbt2bit.py`, `rbt_bit_converter/bit2rbt.py` | `rbt_bit_converter.create_widget` |
 | `rbt2vcd` | RBT转VCD | `RBT2VCD/` | `RBT2VCD/AGENT.md` | `RBT2VCD/rbt2vcd.py` | `RBT2VCD.create_widget` |

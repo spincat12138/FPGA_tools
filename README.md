@@ -58,7 +58,7 @@ python main.py
 ### RBT 转 ATP
 
 ```powershell
-python .\RBT2ATP\RBT2ATP软件.py
+python .\RBT2ATP\rbt2atp_gui.py
 ```
 
 ### RBT 文件整理

@@ -8,7 +8,7 @@
 - 工具用途：将 `.rbt` 配置数据转换为 `.atp` 向量文件，支持单文件和批量目录转换。
 - 运行环境：遵循项目根文档，默认使用项目内虚拟环境 `py38`。
 - GUI 技术栈：遵循项目根文档，界面开发使用 `PyQt5`。
-- 独立运行入口：`RBT2ATP软件.py`。
+- 独立运行入口：`rbt2atp_gui.py`。
 - 主界面接入入口：`RBT2ATP/__init__.py` 暴露的 `create_widget(parent=None, services=None)`。
 
 ## 推荐内部结构
@@ -51,9 +51,9 @@ def create_widget(parent=None, services=None):
 
 ## GUI 维护约定
 
-- `RBT2ATPgui.ui` 是界面布局源文件，运行时在 `RBT2ATP软件.py` 中通过 `uic.loadUi()` 直接加载。
+- `RBT2ATPgui.ui` 是界面布局源文件，运行时在 `rbt2atp_gui.py` 中通过 `uic.loadUi()` 直接加载。
 - 不维护 `RBT2ATPgui.py` 这类由 `pyuic` 生成的中间文件，避免 `.ui` 和 `.py` 成为两个界面事实来源。
-- 当前运行时样式集中在 `RBT2ATP软件.py` 的 `apply_visual_style()`；调整视觉风格时优先修改这里的 QSS，不把样式分散到多个槽函数中。
+- 当前运行时样式集中在 `rbt2atp_gui.py` 的 `apply_visual_style()`；调整视觉风格时优先修改这里的 QSS，不把样式分散到多个槽函数中。
 - 表格单元格编辑器由 `CompactTableEditDelegate` 控制，用于避免默认 `QLineEdit` 编辑框过粗、遮挡文字或透出底层旧内容。
 - 表格内联编辑器应保持白色实底、无外框、零 padding；不要改回透明背景，否则编辑时原单元格文字会和新输入内容叠在一起。
 - 修改表格行高、字体、`QTableWidget::item` padding 或编辑器 delegate 后，必须检查 `REPEAT`、`INIT`、`DONE`、`MODE` 等可编辑单元格的编辑态显示。
