@@ -60,7 +60,7 @@ jobs:
         shell: pwsh
         run: |
           python -m nuitka `
-            --mode=onefile `
+            --onefile `
             --assume-yes-for-downloads `
             --windows-console-mode=disable `
             --enable-plugin=pyqt5 `
