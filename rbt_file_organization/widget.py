@@ -16,15 +16,17 @@ class OrganizationWorker(QtCore.QObject):
     finished = QtCore.pyqtSignal(object)
     failed = QtCore.pyqtSignal(str, str)
 
-    def __init__(self, source_root):
+    def __init__(self, source_root, export_bit=False):
         super().__init__()
         self.source_root = source_root
+        self.export_bit = export_bit
 
     @QtCore.pyqtSlot()
     def run(self):
         try:
             result = copy_and_rename_rbt_files(
                 self.source_root,
+                export_bit=self.export_bit,
                 progress_callback=self._on_progress,
             )
         except Exception as exc:
@@ -78,12 +80,14 @@ class RbtFileOrganizationWidget(QtWidgets.QWidget):
         button_row = QtWidgets.QHBoxLayout()
         button_row.setSpacing(8)
         self.start_button = QtWidgets.QPushButton("开始整理")
+        self.export_bit_checkbox = QtWidgets.QCheckBox("同时导出 bit")
         self.open_output_button = QtWidgets.QPushButton("打开输出目录")
         self.clear_log_button = QtWidgets.QPushButton("清空日志")
         self.open_output_button.setEnabled(False)
         self.start_button.clicked.connect(self._start_organization)
         self.open_output_button.clicked.connect(self._open_output_directory)
         button_row.addWidget(self.start_button)
+        button_row.addWidget(self.export_bit_checkbox)
         button_row.addWidget(self.open_output_button)
         button_row.addWidget(self.clear_log_button)
         button_row.addStretch(1)
@@ -188,13 +192,16 @@ class RbtFileOrganizationWidget(QtWidgets.QWidget):
             self._show_error("路径不能为空", "请先输入要整理的路径")
             return
 
+        export_bit = self.export_bit_checkbox.isChecked()
         self._append_log("开始整理：{path}".format(path=source_root))
+        if export_bit:
+            self._append_log("已启用同时导出 bit，将输出到 bit 子目录")
         self._set_running(True)
         self.progress_bar.setValue(0)
         self.open_output_button.setEnabled(False)
 
         self._thread = QtCore.QThread(self)
-        self._worker = OrganizationWorker(source_root)
+        self._worker = OrganizationWorker(source_root, export_bit=export_bit)
         self._worker.moveToThread(self._thread)
         self._thread.started.connect(self._worker.run)
         self._worker.progress.connect(self._on_progress)
@@ -216,7 +223,14 @@ class RbtFileOrganizationWidget(QtWidgets.QWidget):
         self._last_target_dir = result.target_dir
         self.open_output_button.setEnabled(True)
         self._set_running(False)
-        message = "整理完成，共复制 {count} 个 rbt 文件。".format(count=result.copied_count)
+        message = "整理完成，共复制 {count} 个 rbt 文件。".format(
+            count=result.rbt_copied_count,
+        )
+        if result.bit_target_dir is not None:
+            message = "{message}同时复制 {count} 个 bit 文件。".format(
+                message=message,
+                count=result.bit_copied_count,
+            )
         self._append_log(message)
         if self.services is not None:
             self.services.show_info("整理完成", message, parent=self)
@@ -236,6 +250,7 @@ class RbtFileOrganizationWidget(QtWidgets.QWidget):
 
     def _set_running(self, running):
         self.start_button.setEnabled(not running)
+        self.export_bit_checkbox.setEnabled(not running)
         self.browse_button.setEnabled(not running)
         self.path_edit.setEnabled(not running)
         if self.services is not None:

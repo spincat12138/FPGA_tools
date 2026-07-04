@@ -3,13 +3,14 @@ import os
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Tuple
+from typing import Callable, Optional, Tuple
 
 
 @dataclass(frozen=True)
 class RbtCopyRecord:
     source: Path
     destination: Path
+    file_type: str = "rbt"
     overwritten: bool = False
 
 
@@ -17,11 +18,20 @@ class RbtCopyRecord:
 class RbtOrganizationResult:
     source_root: Path
     target_dir: Path
+    bit_target_dir: Optional[Path]
     copied_files: Tuple[RbtCopyRecord, ...]
 
     @property
     def copied_count(self):
         return len(self.copied_files)
+
+    @property
+    def rbt_copied_count(self):
+        return sum(1 for record in self.copied_files if record.file_type == "rbt")
+
+    @property
+    def bit_copied_count(self):
+        return sum(1 for record in self.copied_files if record.file_type == "bit")
 
 
 ProgressCallback = Callable[[int, int, RbtCopyRecord], None]
@@ -30,24 +40,42 @@ ProgressCallback = Callable[[int, int, RbtCopyRecord], None]
 def copy_and_rename_rbt_files(
     source_root,
     target_subdir="rbt",
+    export_bit=False,
+    bit_target_subdir="bit",
     progress_callback=None,
 ):
-    """Copy .rbt files under source_root into source_root/target_subdir."""
+    """Copy .rbt files and optional .bit files under source_root into output subdirs."""
     source_path = _validate_source_root(source_root)
     target_name = _validate_target_subdir(target_subdir)
     target_dir = source_path / target_name
     target_dir.mkdir(parents=True, exist_ok=True)
+    bit_target_dir = None
+    if export_bit:
+        bit_target_name = _validate_target_subdir(bit_target_subdir)
+        bit_target_dir = source_path / bit_target_name
+        bit_target_dir.mkdir(parents=True, exist_ok=True)
 
-    rbt_files = list(_iter_rbt_files(source_path, target_dir))
+    skipped_dirs = (target_dir, bit_target_dir)
+    copy_tasks = [
+        (src_path, target_dir, "rbt")
+        for src_path in _iter_files(source_path, skipped_dirs, ".rbt")
+    ]
+    if bit_target_dir is not None:
+        copy_tasks.extend(
+            (src_path, bit_target_dir, "bit")
+            for src_path in _iter_files(source_path, skipped_dirs, ".bit")
+        )
+
     copied_records = []
-    total = len(rbt_files)
-    for index, src_path in enumerate(rbt_files, start=1):
-        dest_path = target_dir / _destination_filename(source_path, src_path)
+    total = len(copy_tasks)
+    for index, (src_path, output_dir, file_type) in enumerate(copy_tasks, start=1):
+        dest_path = output_dir / _destination_filename(source_path, src_path, file_type)
         overwritten = dest_path.exists()
         shutil.copy2(str(src_path), str(dest_path))
         record = RbtCopyRecord(
             source=src_path,
             destination=dest_path,
+            file_type=file_type,
             overwritten=overwritten,
         )
         copied_records.append(record)
@@ -57,6 +85,7 @@ def copy_and_rename_rbt_files(
     return RbtOrganizationResult(
         source_root=source_path,
         target_dir=target_dir,
+        bit_target_dir=bit_target_dir,
         copied_files=tuple(copied_records),
     )
 
@@ -82,25 +111,29 @@ def _validate_target_subdir(target_subdir):
     return target_name
 
 
-def _iter_rbt_files(source_root, target_dir):
-    target_resolved = target_dir.resolve()
+def _iter_files(source_root, skipped_dirs, suffix):
+    skipped_resolved = {
+        target_dir.resolve()
+        for target_dir in skipped_dirs
+        if target_dir is not None
+    }
     for root, dirnames, filenames in os.walk(str(source_root)):
         root_path = Path(root)
         dirnames[:] = [
             dirname
             for dirname in dirnames
-            if (root_path / dirname).resolve() != target_resolved
+            if (root_path / dirname).resolve() not in skipped_resolved
         ]
 
         for filename in filenames:
-            if filename.lower().endswith(".rbt"):
+            if filename.lower().endswith(suffix):
                 yield (root_path / filename).resolve()
 
 
-def _destination_filename(source_root, src_path):
+def _destination_filename(source_root, src_path, file_type):
     relative_parts = src_path.relative_to(source_root).parts
     if len(relative_parts) == 1:
         base_name = src_path.stem
     else:
         base_name = relative_parts[0]
-    return "{base_name}.rbt".format(base_name=base_name)
+    return "{base_name}.{file_type}".format(base_name=base_name, file_type=file_type)

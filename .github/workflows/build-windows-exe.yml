@@ -87,6 +87,7 @@ jobs:
             --include-data-files=GenerateUcf/generate_ucf.ui=GenerateUcf/generate_ucf.ui `
             --include-data-dir=GenerateUcf/profiles=GenerateUcf/profiles `
             --include-data-dir=GenerateUcf/assets=GenerateUcf/assets `
+            --include-data-dir=common/assets=common/assets `
             main.py
 
       - name: Upload EXE artifact

@@ -11,7 +11,7 @@ PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、RBT/
 | 工具 | 入口 | 功能 |
 | --- | --- | --- |
 | RBT 转 ATP | `RBT2ATP/` | 将 `.rbt` 配置数据转换为 `.atp` 向量文件，支持单文件和批量目录转换 |
-| RBT 文件整理 | `rbt_file_organization/` | 扫描目录中的 `.rbt` 文件并整理复制到 `rbt/` 子目录 |
+| RBT 文件整理 | `rbt_file_organization/` | 扫描目录中的 `.rbt` 文件并整理复制到 `rbt/` 子目录，可选同步整理 `.bit` 文件到 `bit/` 子目录 |
 | RBT/BIT 互转 | `rbt_bit_converter/` | 支持 `.rbt` 转 `.bit` 和 `.bit` 转 `.rbt`，GUI 可多文件批量转换 |
 | RBT 转 VCD | `RBT2VCD/` | 将 Xilinx ASCII `.rbt` 文件转换为 SelectMAP 风格 `.vcd` 文件，GUI 可多文件批量转换 |
 | 创建 Vivado 工程 | `create_project/` | 创建 Vivado 工程目录结构，或生成 Tcl 并调用 Vivado batch 构建工程 |
@@ -69,7 +69,8 @@ python .\rbt_file_organization\rbt_file_organization.py <待整理目录>
 
 整理规则：
 
-- 输出目录固定为输入目录下的 `rbt/`。
+- RBT 输出目录固定为输入目录下的 `rbt/`。
+- 勾选 `同时导出 bit` 后，会同时新建 `bit/` 子目录，并按同一套规则和命名整理 `.bit` 文件。
 - `.rbt` 扩展名匹配不区分大小写。
 - 扫描时跳过输出目录，避免重复整理。
 - 目标文件已存在时会覆盖，并在结果中标记。
