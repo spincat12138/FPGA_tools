@@ -109,7 +109,6 @@ TOOL_PREFERRED_SIZE_PROPERTY = "_fpga_tools_preferred_size"
 EXTERNAL_TOOL_SIZE_PROPERTY = "preferred_size"
 SIDEBAR_EXPANDED_MIN_WIDTH = 210
 SIDEBAR_EXPANDED_MAX_WIDTH = 260
-SIDEBAR_COLLAPSED_WIDTH = 72
 NAV_ICON_SIZE = 24
 NAV_ITEM_SIZE = QtCore.QSize(176, 46)
 SIDEBAR_DECOR_HEIGHT = 234
@@ -381,8 +380,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(DEFAULT_TOOL_SIZE)
         self._resize_to_tool_pending = False
         self._resizing_to_tool = False
-        self._sidebar_collapsed = False
-        self._sidebar_animation = None
 
         icon_path = ROOT_DIR / "RBT2ATP" / "logo.ico"
         if icon_path.exists():
@@ -435,13 +432,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.sidebar_subtitle.setObjectName("sidebarSubtitle")
         sidebar_text_layout.addWidget(self.sidebar_subtitle)
         sidebar_header.addLayout(sidebar_text_layout, 1)
-
-        self.sidebar_toggle = QtWidgets.QToolButton()
-        self.sidebar_toggle.setObjectName("sidebarToggle")
-        self.sidebar_toggle.setText("<")
-        self.sidebar_toggle.setToolTip("收起导航")
-        self.sidebar_toggle.clicked.connect(self._toggle_sidebar)
-        sidebar_header.addWidget(self.sidebar_toggle, 0, QtCore.Qt.AlignTop)
 
         sidebar_header_layout.addLayout(sidebar_header)
         sidebar_layout.addWidget(sidebar_header_widget)
@@ -534,69 +524,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self._sync_navigation_labels()
         self._schedule_resize_to_current_tool()
 
-    def _toggle_sidebar(self):
-        self._set_sidebar_collapsed(not self._sidebar_collapsed)
-
-    def _set_sidebar_collapsed(self, collapsed):
-        if collapsed == self._sidebar_collapsed:
-            return
-        self._sidebar_collapsed = collapsed
-        if collapsed:
-            self.sidebar_logo.hide()
-            self.sidebar_title.hide()
-            self.sidebar_subtitle.hide()
-            self.sidebar_decor.hide()
-            self.footer_widget.hide()
-            self.sidebar_toggle.setText(">")
-            self.sidebar_toggle.setToolTip("展开导航")
-            self.navigation_layout.setContentsMargins(10, 0, 8, 0)
-            target_width = SIDEBAR_COLLAPSED_WIDTH
-        else:
-            self.sidebar_logo.show()
-            self.sidebar_title.show()
-            self.sidebar_subtitle.show()
-            self.sidebar_decor.show()
-            self.footer_widget.show()
-            self.sidebar_toggle.setText("<")
-            self.sidebar_toggle.setToolTip("收起导航")
-            self.navigation_layout.setContentsMargins(20, 0, 18, 0)
-            target_width = SIDEBAR_EXPANDED_MIN_WIDTH
-
-        self._sync_navigation_labels()
-        self._animate_sidebar_width(target_width)
-
-    def _animate_sidebar_width(self, target_width):
-        if self._sidebar_animation is not None:
-            self._sidebar_animation.stop()
-
-        if not self.isVisible():
-            self._finish_sidebar_animation(target_width)
-            return
-
-        start_width = self.sidebar.width()
-        if start_width <= 0:
-            start_width = SIDEBAR_EXPANDED_MIN_WIDTH
-
-        self.sidebar.setFixedWidth(start_width)
-        animation = QtCore.QVariantAnimation(self)
-        animation.setDuration(160)
-        animation.setStartValue(start_width)
-        animation.setEndValue(target_width)
-        animation.setEasingCurve(QtCore.QEasingCurve.OutCubic)
-        animation.valueChanged.connect(lambda value: self.sidebar.setFixedWidth(int(value)))
-        animation.finished.connect(lambda: self._finish_sidebar_animation(target_width))
-        animation.start(QtCore.QAbstractAnimation.DeleteWhenStopped)
-        self._sidebar_animation = animation
-
-    def _finish_sidebar_animation(self, target_width):
-        self.sidebar.setMinimumWidth(target_width)
-        if self._sidebar_collapsed:
-            self.sidebar.setMaximumWidth(target_width)
-        else:
-            self.sidebar.setMaximumWidth(SIDEBAR_EXPANDED_MAX_WIDTH)
-        self._sidebar_animation = None
-        self._schedule_resize_to_current_tool()
-
     def _sync_navigation_labels(self):
         current_row = self.navigation.currentRow()
         for row in range(self.navigation.count()):
@@ -605,14 +532,9 @@ class MainWindow(QtWidgets.QMainWindow):
             icon_type = item.data(NAV_ICON_ROLE) or "default"
             item.setToolTip(title)
             item.setIcon(_nav_icon(icon_type, active=row == current_row))
-            if self._sidebar_collapsed:
-                item.setText("")
-                item.setTextAlignment(QtCore.Qt.AlignCenter)
-                item.setSizeHint(QtCore.QSize(44, 46))
-            else:
-                item.setText(title)
-                item.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
-                item.setSizeHint(NAV_ITEM_SIZE)
+            item.setText(title)
+            item.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft)
+            item.setSizeHint(NAV_ITEM_SIZE)
 
     def _build_menu(self):
         file_menu = self.menuBar().addMenu("文件")
@@ -736,24 +658,6 @@ class MainWindow(QtWidgets.QMainWindow):
             font-size: 12px;
             font-weight: bold;
             padding: 0;
-            }
-
-
-            QToolButton#sidebarToggle {
-            background-color: #eff6ff;
-            border: 1px solid #d8e8ff;
-            border-radius: 5px;
-            color: #2f7df6;
-            font-weight: bold;
-            min-width: 26px;
-            min-height: 26px;
-            padding: 0;
-            }
-
-
-            QToolButton#sidebarToggle:hover {
-            background-color: #e2efff;
-            border-color: #9cc7ff;
             }
 
 
