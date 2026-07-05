@@ -53,11 +53,11 @@ jobs:
         run: |
           python -m py_compile main.py tools_registry.py common/services.py
           python -m py_compile RBT2ATP/rbt2atp_gui.py RBT2ATP/__init__.py
-          python -m py_compile rbt_file_organization/core.py rbt_file_organization/widget.py rbt_file_organization/__init__.py
-          python -m py_compile rbt_bit_converter/rbt2bit.py rbt_bit_converter/bit2rbt.py rbt_bit_converter/widget.py rbt_bit_converter/__init__.py
+          python -m py_compile RBT_Organization/core.py RBT_Organization/widget.py RBT_Organization/__init__.py
+          python -m py_compile RBT_BIT_Converter/rbt2bit.py RBT_BIT_Converter/bit2rbt.py RBT_BIT_Converter/widget.py RBT_BIT_Converter/__init__.py
           python -m py_compile RBT2VCD/rbt2vcd.py RBT2VCD/widget.py RBT2VCD/__init__.py
-          python -m py_compile create_project/create_project.py create_project/widget.py create_project/__init__.py
-          python -m py_compile config_board_v2/usbtest_py.py config_board_v2/widget.py config_board_v2/usbtest_gui.py config_board_v2/__init__.py
+          python -m py_compile Create_Project/create_project.py Create_Project/widget.py Create_Project/__init__.py
+          python -m py_compile Config_Board_V2/usbtest_py.py Config_Board_V2/widget.py Config_Board_V2/usbtest_gui.py Config_Board_V2/__init__.py
           python -m py_compile GenerateUcf/core.py GenerateUcf/generate_ucf.py GenerateUcf/widget.py GenerateUcf/__init__.py
 
       - name: Build EXE
@@ -77,12 +77,12 @@ jobs:
             --include-package-data=RBT2ATP `
             --include-module=RBT2ATP.rbt2atp_gui `
             --include-package=RBT2ATP `
-            --include-package=rbt_file_organization `
-            --include-package=rbt_bit_converter `
+            --include-package=RBT_Organization `
+            --include-package=RBT_BIT_Converter `
             --include-package=RBT2VCD `
-            --include-package=create_project `
-            --include-package=config_board_v2 `
-            --include-data-files=config_board_v2/config_board_v2.ui=config_board_v2/config_board_v2.ui `
+            --include-package=Create_Project `
+            --include-package=Config_Board_V2 `
+            --include-data-files=Config_Board_V2/config_board_v2.ui=Config_Board_V2/config_board_v2.ui `
             --include-package=GenerateUcf `
             --include-data-files=GenerateUcf/generate_ucf.ui=GenerateUcf/generate_ucf.ui `
             --include-data-dir=GenerateUcf/profiles=GenerateUcf/profiles `

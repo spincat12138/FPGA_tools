@@ -113,6 +113,7 @@ NAV_ICON_SIZE = 24
 NAV_ITEM_SIZE = QtCore.QSize(176, 46)
 SIDEBAR_DECOR_HEIGHT = 234
 SIDEBAR_DECOR_ASSET = ROOT_DIR / "common" / "assets" / "sidebar_chip_decor.png"
+NAV_ICON_ASSET_DIR = ROOT_DIR / "common" / "assets" / "nav_icons"
 NAV_TITLE_ROLE = QtCore.Qt.UserRole + 1
 NAV_TOOL_ID_ROLE = QtCore.Qt.UserRole + 2
 NAV_ICON_ROLE = QtCore.Qt.UserRole + 3
@@ -128,104 +129,18 @@ TOOL_ICON_TYPES = {
 }
 
 
-def _stroke_icon(icon_type, color, size=NAV_ICON_SIZE):
-    pixmap = QtGui.QPixmap(size, size)
-    pixmap.fill(QtCore.Qt.transparent)
-
-    painter = QtGui.QPainter(pixmap)
-    painter.setRenderHint(QtGui.QPainter.Antialiasing)
-    pen = QtGui.QPen(QtGui.QColor(color), 2.0, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin)
-    painter.setPen(pen)
-    painter.setBrush(QtCore.Qt.NoBrush)
-
-    if icon_type == "bolt":
-        path = QtGui.QPainterPath()
-        path.moveTo(13, 2.5)
-        path.lineTo(5.5, 13)
-        path.lineTo(12, 13)
-        path.lineTo(10, 21.5)
-        path.lineTo(18.8, 9.6)
-        path.lineTo(12.4, 9.6)
-        path.closeSubpath()
-        painter.drawPath(path)
-    elif icon_type == "folder":
-        path = QtGui.QPainterPath()
-        path.moveTo(3, 7)
-        path.lineTo(9, 7)
-        path.lineTo(11, 9.3)
-        path.lineTo(21, 9.3)
-        path.lineTo(21, 20)
-        path.lineTo(3, 20)
-        path.closeSubpath()
-        painter.drawPath(path)
-    elif icon_type == "swap":
-        painter.drawLine(5, 8, 18, 8)
-        painter.drawLine(15, 5, 19, 8)
-        painter.drawLine(15, 11, 19, 8)
-        painter.drawLine(19, 16, 6, 16)
-        painter.drawLine(9, 13, 5, 16)
-        painter.drawLine(9, 19, 5, 16)
-    elif icon_type == "wave":
-        painter.drawRoundedRect(QtCore.QRectF(4, 5, 16, 14), 2, 2)
-        path = QtGui.QPainterPath()
-        path.moveTo(6.5, 14)
-        path.lineTo(9, 14)
-        path.lineTo(10.5, 10)
-        path.lineTo(13.5, 17)
-        path.lineTo(15, 12)
-        path.lineTo(18, 12)
-        painter.drawPath(path)
-    elif icon_type == "wand":
-        painter.drawLine(6, 18, 18, 6)
-        painter.drawLine(15, 4, 20, 9)
-        painter.drawLine(4, 7, 7, 7)
-        painter.drawLine(QtCore.QPointF(5.5, 5.5), QtCore.QPointF(5.5, 8.5))
-        painter.drawLine(16, 18, 20, 18)
-        painter.drawLine(18, 16, 18, 20)
-    elif icon_type == "chip":
-        painter.drawRoundedRect(QtCore.QRectF(7, 7, 10, 10), 1.8, 1.8)
-        painter.drawRoundedRect(QtCore.QRectF(10, 10, 4, 4), 0.8, 0.8)
-        for pos in (5, 19):
-            painter.drawLine(pos, 9, pos, 9)
-            painter.drawLine(pos, 12, pos, 12)
-            painter.drawLine(pos, 15, pos, 15)
-            painter.drawLine(9, pos, 9, pos)
-            painter.drawLine(12, pos, 12, pos)
-            painter.drawLine(15, pos, 15, pos)
-        painter.drawLine(3, 9, 7, 9)
-        painter.drawLine(3, 12, 7, 12)
-        painter.drawLine(3, 15, 7, 15)
-        painter.drawLine(17, 9, 21, 9)
-        painter.drawLine(17, 12, 21, 12)
-        painter.drawLine(17, 15, 21, 15)
-        painter.drawLine(9, 3, 9, 7)
-        painter.drawLine(12, 3, 12, 7)
-        painter.drawLine(15, 3, 15, 7)
-        painter.drawLine(9, 17, 9, 21)
-        painter.drawLine(12, 17, 12, 21)
-        painter.drawLine(15, 17, 15, 21)
-    elif icon_type == "file":
-        path = QtGui.QPainterPath()
-        path.moveTo(7, 3.5)
-        path.lineTo(15, 3.5)
-        path.lineTo(20, 8.5)
-        path.lineTo(20, 20.5)
-        path.lineTo(7, 20.5)
-        path.closeSubpath()
-        painter.drawPath(path)
-        painter.drawLine(QtCore.QPointF(15, 3.5), QtCore.QPointF(15, 9))
-        painter.drawLine(15, 9, 20, 9)
-        painter.drawLine(10, 13, 17, 13)
-        painter.drawLine(QtCore.QPointF(10, 16.5), QtCore.QPointF(15, 16.5))
-    else:
-        painter.drawRoundedRect(QtCore.QRectF(5, 5, 14, 14), 3, 3)
-
-    painter.end()
-    return QtGui.QIcon(pixmap)
+def _asset_icon(icon_type, color_name):
+    icon_path = NAV_ICON_ASSET_DIR / "{icon_type}_{color}.svg".format(
+        icon_type=icon_type,
+        color=color_name,
+    )
+    if not icon_path.exists():
+        icon_path = NAV_ICON_ASSET_DIR / "default_{color}.svg".format(color=color_name)
+    return QtGui.QIcon(str(icon_path))
 
 
 def _nav_icon(icon_type, active=False):
-    return _stroke_icon(icon_type, "#ffffff" if active else "#2f7df6")
+    return _asset_icon(icon_type, "white" if active else "blue")
 
 
 def _info_icon():
@@ -243,132 +158,33 @@ def _info_icon():
     return QtGui.QIcon(pixmap)
 
 
-class SidebarDecor(QtWidgets.QWidget):
+class SidebarDecor(QtWidgets.QLabel):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("sidebarDecor")
         self.setFixedHeight(SIDEBAR_DECOR_HEIGHT)
         self.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.setAutoFillBackground(False)
-        self._pixmap = QtGui.QPixmap(str(SIDEBAR_DECOR_ASSET))
+        self.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
+        self.setScaledContents(False)
+        self._source_pixmap = QtGui.QPixmap(str(SIDEBAR_DECOR_ASSET))
+        self._sync_pixmap()
 
-    def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._sync_pixmap()
 
-        width = self.width()
-        height = self.height()
-        if not self._pixmap.isNull():
-            scaled = self._pixmap.scaled(
-                width,
-                height,
+    def _sync_pixmap(self):
+        if self._source_pixmap.isNull() or self.width() <= 0 or self.height() <= 0:
+            self.clear()
+            return
+        self.setPixmap(
+            self._source_pixmap.scaled(
+                self.size(),
                 QtCore.Qt.KeepAspectRatio,
                 QtCore.Qt.SmoothTransformation,
             )
-            x = int((width - scaled.width()) / 2)
-            y = height - scaled.height()
-            painter.drawPixmap(x, y, scaled)
-            painter.end()
-            return
-
-        painter.setPen(QtCore.Qt.NoPen)
-
-        glow = QtGui.QRadialGradient(QtCore.QPointF(width * 0.40, height * 0.80), height * 0.64)
-        glow.setColorAt(0.0, QtGui.QColor(72, 150, 255, 58))
-        glow.setColorAt(0.52, QtGui.QColor(98, 179, 255, 26))
-        glow.setColorAt(1.0, QtGui.QColor(255, 255, 255, 0))
-        painter.setBrush(glow)
-        painter.drawEllipse(QtCore.QRectF(-width * 0.10, height * 0.34, width * 1.08, height * 0.64))
-
-        trace_pen = QtGui.QPen(QtGui.QColor(90, 167, 255, 42), 1.0)
-        trace_pen.setCapStyle(QtCore.Qt.RoundCap)
-        painter.setPen(trace_pen)
-        painter.setBrush(QtGui.QColor(111, 181, 255, 52))
-        points = [
-            (width * 0.34, height * 0.62, width * 0.22, height * 0.48),
-            (width * 0.58, height * 0.61, width * 0.72, height * 0.46),
-            (width * 0.43, height * 0.47, width * 0.50, height * 0.35),
-        ]
-        for x1, y1, x2, y2 in points:
-            painter.drawLine(QtCore.QPointF(x1, y1), QtCore.QPointF(x2, y2))
-            painter.drawEllipse(QtCore.QPointF(x2, y2), 2.2, 2.2)
-
-        block_top = QtGui.QPolygonF([
-            QtCore.QPointF(width * 0.62, height * 0.53),
-            QtCore.QPointF(width * 0.80, height * 0.61),
-            QtCore.QPointF(width * 0.64, height * 0.69),
-            QtCore.QPointF(width * 0.46, height * 0.60),
-        ])
-        block_right = QtGui.QPolygonF([
-            QtCore.QPointF(width * 0.80, height * 0.61),
-            QtCore.QPointF(width * 0.80, height * 0.79),
-            QtCore.QPointF(width * 0.64, height * 0.87),
-            QtCore.QPointF(width * 0.64, height * 0.69),
-        ])
-        block_left = QtGui.QPolygonF([
-            QtCore.QPointF(width * 0.46, height * 0.60),
-            QtCore.QPointF(width * 0.64, height * 0.69),
-            QtCore.QPointF(width * 0.64, height * 0.87),
-            QtCore.QPointF(width * 0.46, height * 0.78),
-        ])
-        painter.setPen(QtGui.QPen(QtGui.QColor(89, 158, 246, 28), 1.0))
-        painter.setBrush(QtGui.QColor(239, 247, 255, 76))
-        painter.drawPolygon(block_top)
-        painter.setBrush(QtGui.QColor(218, 237, 255, 42))
-        painter.drawPolygon(block_right)
-        painter.setBrush(QtGui.QColor(226, 242, 255, 54))
-        painter.drawPolygon(block_left)
-
-        board_top = QtGui.QPolygonF([
-            QtCore.QPointF(width * 0.30, height * 0.72),
-            QtCore.QPointF(width * 0.51, height * 0.62),
-            QtCore.QPointF(width * 0.73, height * 0.75),
-            QtCore.QPointF(width * 0.50, height * 0.88),
-        ])
-        board_side = QtGui.QPolygonF([
-            QtCore.QPointF(width * 0.30, height * 0.72),
-            QtCore.QPointF(width * 0.50, height * 0.88),
-            QtCore.QPointF(width * 0.50, height * 0.93),
-            QtCore.QPointF(width * 0.30, height * 0.78),
-        ])
-        board_right = QtGui.QPolygonF([
-            QtCore.QPointF(width * 0.50, height * 0.88),
-            QtCore.QPointF(width * 0.73, height * 0.75),
-            QtCore.QPointF(width * 0.73, height * 0.80),
-            QtCore.QPointF(width * 0.50, height * 0.93),
-        ])
-        painter.setPen(QtGui.QPen(QtGui.QColor(92, 159, 247, 74), 1.0))
-        painter.setBrush(QtGui.QColor(244, 250, 255, 190))
-        painter.drawPolygon(board_top)
-        painter.setBrush(QtGui.QColor(211, 233, 255, 84))
-        painter.drawPolygon(board_side)
-        painter.setBrush(QtGui.QColor(190, 221, 255, 88))
-        painter.drawPolygon(board_right)
-
-        chip = QtGui.QPolygonF([
-            QtCore.QPointF(width * 0.42, height * 0.75),
-            QtCore.QPointF(width * 0.52, height * 0.70),
-            QtCore.QPointF(width * 0.63, height * 0.76),
-            QtCore.QPointF(width * 0.52, height * 0.82),
-        ])
-        painter.setPen(QtGui.QPen(QtGui.QColor(56, 137, 245, 170), 2.2))
-        painter.setBrush(QtGui.QColor(232, 244, 255, 190))
-        painter.drawPolygon(chip)
-
-        painter.setPen(QtGui.QPen(QtGui.QColor(96, 166, 255, 90), 1.0))
-        for start, end in [
-            ((0.39, 0.74), (0.33, 0.71)),
-            ((0.43, 0.82), (0.37, 0.86)),
-            ((0.62, 0.74), (0.69, 0.71)),
-            ((0.61, 0.81), (0.68, 0.84)),
-        ]:
-            painter.drawLine(
-                QtCore.QPointF(width * start[0], height * start[1]),
-                QtCore.QPointF(width * end[0], height * end[1]),
-            )
-
-        painter.end()
+        )
 
 
 
@@ -415,7 +231,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.sidebar_logo = QtWidgets.QLabel()
         self.sidebar_logo.setObjectName("sidebarLogo")
-        self.sidebar_logo.setPixmap(_stroke_icon("chip", "#2f7df6", 30).pixmap(30, 30))
+        self.sidebar_logo.setPixmap(_asset_icon("chip", "blue").pixmap(30, 30))
         self.sidebar_logo.setFixedSize(36, 36)
         self.sidebar_logo.setAlignment(QtCore.Qt.AlignCenter)
         sidebar_header.addWidget(self.sidebar_logo, 0, QtCore.Qt.AlignTop)

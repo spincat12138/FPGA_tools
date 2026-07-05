@@ -62,7 +62,6 @@ class RBT2ATP(QtWidgets.QMainWindow):
         self.variables = ["CFG_CCLK", "CFG_CSI", "CFG_RDWR", "CFG_PROG", "CFG_INIT",
                           "CFG_DONE", "CFG_MODE", "CFG_PUDC", "CFG_BVS", "CFG_POR"]
         self.default_init()
-        # self.pushButton_default.clicked.connect(self.default_button)
         self.pushButton_openFile.clicked.connect(self.open_file_button)
         self.tableWidget.cellChanged.connect(self.mode_value_change)
         for item in self.default_list + self.undefault_list:
@@ -555,7 +554,7 @@ class RBT2ATP(QtWidgets.QMainWindow):
         value = self.tableWidget.item(0, 7).text()
         try:
             int(value)
-        except:
+        except Exception:
             QtWidgets.QMessageBox.critical(self, "Error", "请在MODE栏输入数字!")
             status_bar.append(">>请在MODE栏输入数字!")
             return False
@@ -626,7 +625,7 @@ class RBT2ATP(QtWidgets.QMainWindow):
                     QtWidgets.QApplication.processEvents()
                     self.pBar.setValue(100)
                     QtWidgets.QMessageBox.information(self, "Info", "ATP文件已转换完毕！")
-            except:
+            except Exception:
                 self.pBar.setValue(0)
                 QtWidgets.QMessageBox.critical(self, "Error", "%s文件有误，请检查!" % file)
                 status_bar.append(">>%s文件有误，请检查!" % file)
@@ -636,7 +635,7 @@ class RBT2ATP(QtWidgets.QMainWindow):
             if not os.path.exists(save_path):
                 try:
                     os.mkdir(save_path)
-                except:
+                except Exception:
                     QtWidgets.QMessageBox.critical(self, "Error", "%s文件夹有误，请检查!" % path)
                     status_bar.append(">>%s文件夹有误，请检查!" % path)
                     return False
@@ -657,10 +656,8 @@ class RBT2ATP(QtWidgets.QMainWindow):
                     if (i + 1) % divisor == 0:
                         x = (i + 1) / divisor
                         QtWidgets.QApplication.processEvents()
-                        # status_bar.append(">>已生成%d%s的ATP文件" % (x * 20, '%'))
-                        QtWidgets.QApplication.processEvents()
                         self.pBar.setValue(2 + int(x * 20 * 0.95))
-                except:
+                except Exception:
                     self.pBar.setValue(0)
                     QtWidgets.QMessageBox.critical(self, "Error", "%s文件有误，请检查!" % file)
                     status_bar.append(">>%s文件有误，请检查!" % file)
@@ -698,8 +695,6 @@ class RBT2ATP(QtWidgets.QMainWindow):
             for j in checked_column:
                 value = self.tableWidget.item(i, j).text()
                 cfg_data[i].append(value)
-        # for d in cfg_data:
-        #     print(d)
         # endregion
 
         # region 头字符串，从“opcode_mode=extended;” 到“start_label”
@@ -707,8 +702,6 @@ class RBT2ATP(QtWidgets.QMainWindow):
         temp_string = "{vector_name} ( $tset, ".format(vector_name=self.vector_name) + variables + "CFG_Data" + " )\n"
         atp_data.append(temp_string)
         atp_data.append('{\n')
-        # for item in atp_data:
-        #     print(item)
         file_name = file.split("/")[-1]
         file_name = file_name.split(".")[0]
         atp_data.append("start_label " + file_name + ":\n")
@@ -766,7 +759,7 @@ class RBT2ATP(QtWidgets.QMainWindow):
             repeat = temp_cfg_data[0]
             try:
                 int(repeat)
-            except:
+            except Exception:
                 QtWidgets.QMessageBox.critical(self, "Error", "请在repeat栏中输入数字!")
                 QtWidgets.QApplication.processEvents()
                 status_bar.append(">>请在repeat栏中输入数字!")
@@ -804,7 +797,6 @@ class RBT2ATP(QtWidgets.QMainWindow):
                 repeat_count += 1
                 block += 1
             if repeat_count == 1:
-                # print(repeat_count, block + 1)
                 temp_cfg_data = cfg_data[7]
                 str_cfg = ""
                 for item in temp_cfg_data[1:]:
@@ -814,7 +806,6 @@ class RBT2ATP(QtWidgets.QMainWindow):
                     atp_data.append(str1)
                 block += 1
             else:
-                # print(repeat_count, block + 1)
                 temp_cfg_data = cfg_data[7]
                 str_cfg = ""
                 for item in temp_cfg_data[1:]:
@@ -873,7 +864,7 @@ class RBT2ATP(QtWidgets.QMainWindow):
         status_bar = self.textBrowser_statusBar
         try:
             rbt_data = open(file).readlines()
-        except:
+        except Exception:
             QtWidgets.QMessageBox.critical(self, "Error", "%s文件有误，请检查!" % file)
             status_bar.append(">>%s文件有误，请检查!" % file)
             return []

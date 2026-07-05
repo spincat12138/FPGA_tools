@@ -12,6 +12,7 @@ py38/
 # IDE and editor state
 .idea/
 .vscode/
+.claude/
 
 # Test, coverage and packaging output
 .pytest_cache/

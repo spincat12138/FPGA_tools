@@ -1,29 +1,15 @@
-# config_board_v2 子工具 Agent 准则
+# Config_Board_V2 子工具 Agent 准则
 
-本文件维护 `config_board_v2` 子工具自己的业务规则、内部结构和验证要求。主界面只通过根目录 `AGENT.md` 中定义的注册入口加载本工具。
+本文件维护 `Config_Board_V2` 子工具自己的业务规则、内部结构和验证要求。主界面只通过根目录 `AGENT.md` 中定义的注册入口加载本工具。
 
 ## 工具定位
 
 - 工具名称：配置板烧写程序-V2。
 - 工具用途：通过 FTDI USB 设备执行配置板握手、擦除、码流配置、ReadBack、回读验证和 rbt/txt 码流转换。
-- 运行环境：遵循项目根文档，默认使用项目内虚拟环境 `py38`。
-- GUI 技术栈：遵循项目根文档，界面开发使用 `PyQt5`。
-- 独立运行入口：`config_board_v2/usbtest_gui.py`。
-- 主界面接入入口：`config_board_v2/__init__.py` 暴露的 `create_widget(parent=None, services=None)`。
+- 独立运行入口：`Config_Board_V2/usbtest_gui.py`。
+- 主界面接入入口：`Config_Board_V2/__init__.py` 暴露的 `create_widget(parent=None, services=None)`。
 
 ## 内部结构
-
-```text
-config_board_v2/
-  AGENT.md
-  __init__.py
-  config_board_v2.ui
-  usbtest_py.py
-  usbtest_gui.py
-  widget.py
-  FTD2XX_NET.dll
-  FTD2XX_NET.xml
-```
 
 - `usbtest_py.py` 保存 FTDI 通信、设备握手、擦除、写入、回读、验证和码流转换核心逻辑。
 - `config_board_v2.ui` 是 Qt Designer 布局源文件，运行时由 `widget.py` 通过 `uic.loadUi()` 直接加载。
@@ -43,7 +29,7 @@ config_board_v2/
 
 ## GUI 维护约定
 
-- 界面风格应与主界面和其他 PyQt5 子工具保持一致：浅灰背景、白色输入/文本区域、蓝色主按钮、4px 圆角。
+- 界面沿用根文档定义的“统一样式”，如有差异在此说明。
 - 主界面布局位于 `config_board_v2.ui`，只保存控件层级、布局、文案和基础控件属性。
 - 修改或重命名 `.ui` 时，同步更新根目录 GitHub Actions 的 Nuitka data file 清单。
 - 不再引入或维护 Tkinter 界面；独立运行也必须使用 `PyQt5`。
@@ -54,7 +40,7 @@ config_board_v2/
 ## 验证要求
 
 - 修改核心 USB 或码流规则后，至少运行相关命令行路径或用硬件做一次对应操作验证。
-- 修改 GUI 时，至少运行 `python -m py_compile config_board_v2/usbtest_py.py config_board_v2/widget.py config_board_v2/usbtest_gui.py config_board_v2/__init__.py`。
+- 修改 GUI 时，至少运行 `python -m py_compile Config_Board_V2/usbtest_py.py Config_Board_V2/widget.py Config_Board_V2/usbtest_gui.py Config_Board_V2/__init__.py`。
 - 在无 FTDI 环境中，GUI 加载不应崩溃，应显示 `FTDI环境异常` 或 USB 未插入状态。
 - 接入主界面后，确认主 GUI 中的 `配置板烧写程序-V2` 标签页可以加载。
 

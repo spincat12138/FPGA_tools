@@ -85,8 +85,6 @@ def extract_bit_file_info(data, logger=print):
 
     raise ValueError("BIT文件中未找到payload字段")
 
-    return metadata
-
 
 def bit2rbt(bit_file_path, rbt_file_path=None, rename=False, logger=print):
     """
@@ -149,25 +147,6 @@ def bit2rbt(bit_file_path, rbt_file_path=None, rename=False, logger=print):
     _emit(logger, "共写入 {count} 行数据".format(count=count))
     _emit(logger, "=====================BIT文件转RBT文件 结束=====================")
     return rbt_file_path
-
-def find_bit_files(folder_path):
-    """
-    查找指定文件夹中所有的.bit文件
-    :param folder_path: 要搜索的文件夹路径
-    :return: 包含所有.bit文件路径的列表
-    """
-    bit_files = []
-    
-    # 遍历文件夹、子文件夹及文件
-    for root, dirs, files in os.walk(folder_path):
-        for file in files:
-            # 检查文件扩展名是否为.bit
-            if file.endswith('.bit'):
-                # 拼接完整文件路径
-                file_path = os.path.join(root, file)
-                bit_files.append(file_path)
-    
-    return bit_files
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="将 BIT 文件转换为 RBT 文件")

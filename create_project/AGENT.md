@@ -1,4 +1,4 @@
-# create_project 子工具 Agent 准则
+# Create_Project 子工具 Agent 准则
 
 ## 工具定位
 
@@ -19,6 +19,6 @@
 
 ## 验证建议
 
-- 修改核心逻辑后，至少运行 `python -m py_compile create_project/create_project.py create_project/widget.py create_project/__init__.py`。
+- 修改核心逻辑后，至少运行 `python -m py_compile Create_Project/create_project.py Create_Project/widget.py Create_Project/__init__.py`。
 - 目录创建可用临时目录冒烟验证。
 - 构建工程会调用本机 Vivado，缺少 Vivado 或 FPGA 源文件时不应作为 GUI 加载失败处理。

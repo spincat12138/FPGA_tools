@@ -1,26 +1,15 @@
 # RBT文件整理 子工具 Agent 准则
 
-本文件维护 `rbt_file_organization` 子工具自己的业务规则、内部结构和验证要求。主界面只通过根目录 `AGENT.md` 中定义的注册入口加载本工具。
+本文件维护 `RBT_Organization` 子工具自己的业务规则、内部结构和验证要求。主界面只通过根目录 `AGENT.md` 中定义的注册入口加载本工具。
 
 ## 工具定位
 
 - 工具名称：RBT文件整理。
 - 工具用途：扫描用户选择的目标目录，提取其中的 `.rbt` 文件并复制到该目录下的 `rbt/` 子目录；勾选 `同时导出 bit` 时，同步提取 `.bit` 文件到 `bit/` 子目录。
-- 运行环境：遵循项目根文档，默认使用项目内虚拟环境 `py38`。
-- GUI 技术栈：遵循项目根文档，界面开发使用 `PyQt5`。
-- 独立运行入口：`rbt_file_organization/rbt_file_organization.py`。
-- 主界面接入入口：`rbt_file_organization/__init__.py` 暴露的 `create_widget(parent=None, services=None)`。
+- 独立运行入口：`RBT_Organization/rbt_file_organization.py`。
+- 主界面接入入口：`RBT_Organization/__init__.py` 暴露的 `create_widget(parent=None, services=None)`。
 
 ## 内部结构
-
-```text
-rbt_file_organization/
-  AGENT.md
-  __init__.py
-  core.py
-  widget.py
-  rbt_file_organization.py
-```
 
 - `core.py` 放目录校验、递归扫描、目标文件名计算和复制逻辑。
 - `widget.py` 放 PyQt 界面逻辑、信号槽绑定和与 `ToolServices` 的交互。
@@ -39,7 +28,7 @@ rbt_file_organization/
 
 ## GUI 维护约定
 
-- 界面风格应与主界面和 `RBT2ATP` 子工具保持一致：浅灰背景、白色输入/日志区域、蓝色主按钮、绿色进度条。
+- 界面沿用根文档定义的“统一样式”，如有差异在此说明。
 - 界面只提供整理路径输入、目录选择、开始整理、打开输出目录、日志和进度显示。
 - 目录扫描和复制通过后台线程执行，避免阻塞主界面。
 - 需要日志、弹窗、目录选择和忙碌状态时优先使用主界面传入的 `ToolServices`。
