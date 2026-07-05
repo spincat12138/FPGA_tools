@@ -12,9 +12,9 @@
 ## 内部结构
 
 - `__init__.py` 暴露 `TOOL_ID`、`TOOL_NAME` 和 `create_widget()`。
-- `rbt2atp_gui.py` 放 PyQt 界面逻辑、信号槽绑定、与 `ToolServices` 的交互,以及 RBT 解析、ATP 内容生成、repeat 压缩和输出路径计算等业务逻辑,并保留独立运行入口。
-- `RBT2ATPgui.ui` 是 Qt Designer 源文件，运行时由 `uic.loadUi()` 直接加载；不维护 `RBT2ATPgui.py` 这类 `pyuic` 生成的中间文件，避免界面定义出现两个事实来源。
-- `presets.json` 是预设的唯一事实来源，随包打入。
+- `rbt2atp_gui.py` 承载 PyQt 界面与全部业务逻辑（RBT 解析、ATP 生成、repeat 压缩、输出路径计算），并保留独立运行入口。
+- `RBT2ATPgui.ui` 是 Qt Designer 界面源文件（维护约定见「GUI 维护约定」）。
+- `presets.json` 是预设的唯一事实来源（细节见「GUI 维护约定」）。
 - `logo.ico` 是工具图标。
 
 ## 接入主界面约定

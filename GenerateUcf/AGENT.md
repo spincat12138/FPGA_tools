@@ -10,7 +10,7 @@
 
 - 主界面入口：`GenerateUcf.create_widget`
 - 独立 GUI：`python -m GenerateUcf.widget`
-- 命令行：`python -m GenerateUcf.generate_ucf --profile type1 --output constraints.ucf`
+- 命令行：`python -m GenerateUcf.generate_ucf --profile 单列 --output constraints.ucf`（内置 profile 名以 `profiles/*.json` 文件名为准，当前为 `单列`、`双列`）
 
 ## GUI 资源
 
@@ -24,7 +24,4 @@
 
 ```powershell
 python -m py_compile GenerateUcf\core.py GenerateUcf\generate_ucf.py GenerateUcf\widget.py GenerateUcf\__init__.py
-python -m GenerateUcf.generate_ucf --profile type1 --preview 5
-python -m GenerateUcf.generate_ucf --profile type2 --preview 5
-python -m GenerateUcf.generate_ucf --profile type3 --preview 5
 ```

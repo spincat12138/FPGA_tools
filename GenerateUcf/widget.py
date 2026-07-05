@@ -242,7 +242,7 @@ class GenerateUcfWidget(QtWidgets.QWidget):
         self.body_splitter.setChildrenCollapsible(False)
         self.body_splitter.setStretchFactor(0, 0)
         self.body_splitter.setStretchFactor(1, 1)
-        self.body_splitter.setSizes([650, 710])
+        self.body_splitter.setSizes([413, 947])
         self.top_row.setStretch(1, 1)
         self.output_row.setStretch(1, 1)
 
