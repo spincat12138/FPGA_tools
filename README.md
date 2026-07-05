@@ -65,12 +65,18 @@ python .\RBT2ATP\rbt2atp_gui.py
 
 ```powershell
 python .\rbt_file_organization\rbt_file_organization.py <待整理目录>
+python .\rbt_file_organization\rbt_file_organization.py <待整理目录> --export-bit
 ```
+
+命令行参数：
+
+- `--target-subdir`：RBT 输出子目录名，默认 `rbt`。
+- `--export-bit`：同时整理 `.bit` 文件到源目录下的 `bit/` 子目录（对应 GUI 中的 `同时导出 bit`）。
 
 整理规则：
 
-- RBT 输出目录固定为输入目录下的 `rbt/`。
-- 勾选 `同时导出 bit` 后，会同时新建 `bit/` 子目录，并按同一套规则和命名整理 `.bit` 文件。
+- RBT 输出目录固定为输入目录下的 `rbt/`（或 `--target-subdir` 指定的子目录）。
+- 启用 `--export-bit`（或 GUI 勾选 `同时导出 bit`）后，会同时新建 `bit/` 子目录，并按同一套规则和命名整理 `.bit` 文件。
 - `.rbt` 扩展名匹配不区分大小写。
 - 扫描时跳过输出目录，避免重复整理。
 - 目标文件已存在时会覆盖，并在结果中标记。
@@ -140,10 +146,12 @@ python .\config_board_v2\usbtest_py.py convert .\example.rbt
 命令行生成：
 
 ```powershell
-python -m GenerateUcf.generate_ucf --profile type1 --output constraints.ucf
-python -m GenerateUcf.generate_ucf --profile type2 --preview 10
+python -m GenerateUcf.generate_ucf --profile 单列 --output constraints.ucf
+python -m GenerateUcf.generate_ucf --profile 双列 --preview 10
 python -m GenerateUcf.generate_ucf --profile .\my_profile.json --output .\constraints.ucf
 ```
+
+内置 profile 名称对应 `GenerateUcf/profiles/` 下的 JSON 文件（当前为 `单列` 和 `双列`），可用 `--list-profiles` 列出。`--profile` 也可以直接传入外部 JSON profile 路径。
 
 也可以在主界面中打开“生成UCF约束”，选择内置或外部 JSON profile，在左侧修改参数，右侧实时预览输出示例。
 
