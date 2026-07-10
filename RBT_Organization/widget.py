@@ -37,9 +37,7 @@ class OrganizationWorker(QtCore.QObject):
 
     def _on_progress(self, index, total, record):
         value = int(index * 100 / total) if total else 100
-        action = "覆盖" if record.overwritten else "复制"
-        message = "{action}: {source} -> {destination}".format(
-            action=action,
+        message = "复制: {source} -> {destination}".format(
             source=record.source,
             destination=record.destination,
         )

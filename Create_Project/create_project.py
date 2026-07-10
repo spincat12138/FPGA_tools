@@ -51,6 +51,25 @@ def tcl_braced(value):
     return "{{{value}}}".format(value=text)
 
 
+def tcl_optional_add_files(fileset, pattern, variable_name):
+    return "\n".join(
+        (
+            "set {variable_name} [glob -nocomplain {pattern}]".format(
+                variable_name=variable_name,
+                pattern=tcl_braced(pattern),
+            ),
+            "if {{[llength ${variable_name}] > 0}} {{".format(
+                variable_name=variable_name,
+            ),
+            "    add_files -fileset {fileset} -norecurse ${variable_name}".format(
+                fileset=tcl_braced(fileset),
+                variable_name=variable_name,
+            ),
+            "}",
+        )
+    )
+
+
 def has_sim_verilog_files(project_dir):
     return any((Path(project_dir) / SOURCE_DIR_NAME / "sim").glob("*.v"))
 
@@ -77,15 +96,19 @@ def create_project_tcl(project_name, device=DEFAULT_DEVICE, project_dir=None):
     )
     add_file_options = []
     if has_sim_verilog_files(project_path):
-        add_file_options.append("add_files -fileset sim_1 -norecurse [glob source/sim/*.v]")
+        add_file_options.append(
+            tcl_optional_add_files("sim_1", "source/sim/*.v", "sim_verilog_files")
+        )
     add_file_options.extend(
         (
-            "add_files -fileset constrs_1 -norecurse [glob source/xdc/*.xdc]",
-            "add_files -fileset sources_1 -norecurse [glob source/hdl/*.v]",
+            tcl_optional_add_files("constrs_1", "source/xdc/*.xdc", "xdc_files"),
+            tcl_optional_add_files("sources_1", "source/hdl/*.v", "hdl_verilog_files"),
         )
     )
     if has_hdl_xci_files(project_path):
-        add_file_options.append("add_files -fileset sources_1 -norecurse [glob source/hdl/*.xci]")
+        add_file_options.append(
+            tcl_optional_add_files("sources_1", "source/hdl/*.xci", "hdl_xci_files")
+        )
     synth_strategy = "set_property strategy Flow_RuntimeOptimized [get_runs synth_1]"
     impl_strategy = "set_property strategy Flow_RuntimeOptimized [get_runs impl_1]"
     bit_compress_option = "set_property STEPS.WRITE_BITSTREAM.ARGS.RAW_BITFILE true [get_runs impl_1]"

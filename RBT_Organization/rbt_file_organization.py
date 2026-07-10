@@ -29,9 +29,7 @@ def main(argv=None):
         export_bit=args.export_bit,
     )
     for record in result.copied_files:
-        action = "已覆盖" if record.overwritten else "已复制"
-        print("{action}: {source} -> {destination}".format(
-            action=action,
+        print("已复制: {source} -> {destination}".format(
             source=record.source,
             destination=record.destination,
         ))
