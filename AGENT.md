@@ -1,129 +1,53 @@
-# FPGA-tools 主界面 Agent 准则
+# FPGA-tools 代码代理规则
 
-本文件只描述统一主界面、子工具注册方式，以及主界面暴露给子工具的公共接口。每个子工具的内部结构、业务规则、文件格式、测试样例和维护约定，由该子工具目录内的 `AGENT.md` 单独维护。
+## 项目概况
 
-## 项目定位
+- 这是一个 Windows 优先的 PyQt5 桌面 FPGA 工具集合。
+- 统一入口是 `main.py`，子工具通过 `tools_registry.py` 注册并显示在主界面右侧页面。
+- 主界面只负责应用壳、工具发现、公共服务和错误展示；具体 FPGA 文件解析、转换、硬件流程放在各子工具内部。
 
-- 本项目是个人 FPGA 工具集合，使用一个统一桌面 GUI 管理多个子工具。
-- 主界面通过左侧工具导航切换不同工具；每个子工具在右侧内容区中表现为一个独立页面。
-- 主界面只管理应用壳、工具发现、公共服务和跨工具一致性，不实现具体 FPGA 转换或解析逻辑。
+## 常用命令
 
-## 运行环境与 GUI 技术栈
+- 创建环境：`python -m venv py38`
+- 激活环境：`.\py38\Scripts\Activate.ps1`
+- 安装基础依赖：`python -m pip install PyQt5`
+- 启动主界面：`python main.py`
+- 语法检查：`python -m compileall main.py tools_registry.py common RBT2ATP RBT_Organization RBT_BIT_Converter RBT2VCD Create_Project Config_Board_V2 GenerateUcf`
+- 打包依赖：`python -m pip install -r requirements-build.txt`
 
-- 本项目默认使用项目内虚拟环境 `py38`；运行、测试、安装依赖时优先使用该环境。
-- GUI 统一使用 `PyQt5` 开发，主界面和子工具页面都应保持 PyQt5 兼容。
-- 不要在未说明原因的情况下引入其他 GUI 框架、切换 Python 环境或升级 Qt 主版本。
+## 主要目录
 
-## 文档分层
+- `common/`：主界面提供给子工具的公共服务。
+- `RBT2ATP/`、`RBT_Organization/`、`RBT_BIT_Converter/`、`RBT2VCD/`、`Create_Project/`、`Config_Board_V2/`、`GenerateUcf/`：各子工具代码。
+- `docs/`：子工具业务规则、入口、资源、验证方式等详细文档。
+- `.github/workflows/`：Windows exe 打包流程。
 
-- 根目录 `AGENT.md`：只维护主界面契约、注册表约定和公共服务接口。
-- 子工具 `AGENT.md`：维护该工具自己的业务边界、文件格式假设、内部目录、依赖、测试和验证方式。
-- 新增或改造子工具时，必须先确认该工具目录下有自己的 `AGENT.md`，再在 `tools_registry.py` 登记入口。
+## 修改规则
 
-## 主界面职责
+- 优先小范围修改，遵循现有 PyQt5、目录和命名方式，不做无关重构。
+- 新增子工具时，在独立目录的 `__init__.py` 暴露 `TOOL_ID`、`TOOL_NAME`、`create_widget(parent=None, services=None)`，并在 `tools_registry.py` 登记。
+- `TOOL_ID` 使用小写英文、数字和下划线；`create_widget()` 返回 `QWidget` 或子类，不反向 import 主窗口。
+- 子工具需要日志、弹窗、目录选择、配置目录、进度或忙碌状态时，优先使用 `common/services.py` 的 `ToolServices`。
+- 业务输出写到用户选择的位置、输入文件旁或文档明确约定的位置；不要默认写入源码目录、临时解包目录或当前工作目录。
+- 路径使用 `pathlib.Path`；外部输入在边界处校验，失败时保留清晰错误原因。
+- 不要修改 `__pycache__`、构建产物、打包输出和覆盖率目录。
+- 修改 `.ui`、图标、JSON/XML 等运行时资源后，同步检查 Nuitka workflow 的 data file 清单。
+- 涉及 Vivado、FTDI 或硬件协议的改动，需要在文档中说明验证边界；无硬件时至少保证 GUI 可加载并清晰展示环境异常。
 
-主界面负责：
+## 验证要求
 
-- 创建 `QApplication`、`QMainWindow`、菜单栏、状态栏、左侧工具导航和右侧页面容器。
-- 从 `tools_registry.py` 读取子工具元数据，仅加载 `enabled` 工具并按注册顺序创建导航项和工具页面。
-- 向子工具传入统一的 `ToolServices`，提供日志、配置路径、文件对话框、错误提示和进度上报等公共能力。
-- 捕获子工具加载失败并在主界面中给出可见错误，避免单个工具失败导致整个应用崩溃。
-- 保持跨工具一致的窗口标题、图标、状态提示和异常展示风格。
-- 根据当前工具页面的推荐尺寸调整主窗口大小，避免主界面固定尺寸遮挡或浪费空间。
+- 文档或注册表改动后，至少检查 `tools_registry.py` 中的 `doc` 路径存在。
+- Python 代码改动后，优先运行相关目录的 `py_compile` 或 `compileall`。
+- GUI 相关改动后，尽量做一次 `python main.py` 启动冒烟验证。
+- 涉及转换规则时，用小样例核对关键输出；不要用静默 fallback 掩盖解析或校验失败。
 
-主界面不负责：
+## 参考文档
 
-- 解析、转换、生成任何具体 FPGA 文件格式。
-- 读取或修改子工具内部控件状态。
-- 保存子工具私有配置。
-- 直接 import 子工具内部实现模块；只能通过注册入口加载。
-
-## 主界面组成
-
-主界面壳层由以下文件承担对应职责(具体目录结构以实际文件为准):
-
-- `main.py`:统一 GUI 入口,包含主窗口壳层和 `apply_visual_style()`。
-- `tools_registry.py`:只保存子工具注册信息和懒加载入口。
-- `common/services.py`:定义主界面暴露给子工具的 `ToolServices` 接口。
-- `common/assets/`:放主界面壳层使用的图标等静态资源。
-
-## 子工具注册契约
-
-每个子工具目录必须暴露稳定入口，推荐在该目录的 `__init__.py` 中提供：
-
-```python
-TOOL_ID = "rbt2atp"
-TOOL_NAME = "RBT转ATP"
-
-def create_widget(parent=None, services=None):
-    ...
-```
-
-要求：
-
-- `TOOL_ID` 使用小写英文、数字和下划线，作为配置、日志、目录和注册表的稳定键。
-- `TOOL_NAME` 是子工具导出的显示名，可以使用中文，并应与注册表显示名保持一致。
-- 主界面导航项文字以 `tools_registry.py` 中的 `name` 为准；修改显示名时同步检查子工具 `TOOL_NAME` 和本文档入口清单。
-- `create_widget()` 必须返回 `QWidget` 或其子类。
-- `create_widget()` 只接收主界面传入的 `parent` 和 `services`，不要反向 import 主窗口。
-- 子工具应通过有效的 `sizeHint()`、`minimumSize()`、初始窗口尺寸或 `preferred_size` 动态属性表达推荐显示尺寸。
-- 子工具加载失败时应抛出清晰异常；主界面负责展示加载失败状态。
-
-`tools_registry.py` 中每个工具记录 `id`、`name`(导航显示名)、`package`、`doc`、`entry` 和 `enabled` 字段;具体形状以该文件为准。
-
-## ToolServices 接口
-
-主界面向子工具传入 `services`，子工具只能通过该对象使用跨工具公共能力。方法签名以 `common/services.py` 为准,当前提供:`log`、`show_info`、`show_error`、`select_file`、`select_directory`、`config_dir`、`data_dir`、`report_progress`、`set_busy`。
-
-接口约束：
-
-- `log()` 面向主界面状态栏、日志面板或文件日志，不替代子工具自己的业务结果输出。
-- `show_error()` 应保留 `detail` 供调试，不要吞掉原始异常上下文。
-- `config_dir()` 和 `data_dir()` 返回应用统一管理的目录；子工具不要硬编码本机绝对路径。
-- `report_progress()` 的 `value` 使用 `0..100`，无法量化时传 `None` 并提供 `message`。
-- 耗时任务由子工具自己放到后台线程；主界面只提供状态呈现接口。
-
-## 路径、输出与打包约定
-
-核心前提：打包为 Nuitka onefile 后 `__file__` 和 `sys.executable` 都可能指向临时解包目录，不能用来推导业务输出或用户可编辑位置。路径拼接统一用 `pathlib.Path`，用户输入路径要校验存在性、类型和失败原因。
-
-按文件类型区分处理方式：
-
-| 文件类型 | 举例 | 处理方式 | 打包要求 |
-| --- | --- | --- | --- |
-| 内置只读资源 | `.ui`、图标、默认 JSON/XML、模板 | 源码运行从模块目录读；`__file__` 只作“资源候选路径” | 必须作为 data file 打入包内，包内相对路径与查找路径一致 |
-| 外置可编辑配置 | 用户覆盖用的配置 | 仅在需求和子工具文档明确允许时启用；路径集中表达，缺失时给清晰提示，不静默回退 | 不打包（由用户提供） |
-| 应用内部状态/缓存 | 工具私有缓存 | 用 `ToolServices.config_dir()` / `data_dir()`，不写源码目录、临时解包目录或 CWD | 不打包 |
-| 用户可见生成文件 | 转换输出 | 写到用户选择的输入文件旁、输出目录或业务约定位置；禁止默认写 `Path(__file__).parent` | 不打包 |
-| 程序所在目录输出 | 需求要求“exe 旁” | 优先用外置根目录、Nuitka 原始启动路径或 `sys.argv[0]` 推导，`sys.executable` 只作候选；源码运行用启动入口或项目根 | 不打包 |
-
-新增、移动或重命名运行时文件后至少检查：
-
-1. 源码运行路径仍能找到该文件。
-2. `.github/workflows/build-windows-exe.yml` 的 Nuitka `--include-data-files`/`--include-data-dir` 清单已覆盖（仅限内置只读资源）。
-3. 打包后相对路径与代码查找路径一致。
-4. 缺失文件时界面给出明确错误或状态提示。
-5. 相关子工具 `AGENT.md` 记录了该文件的用途和维护方式。
-
-## 主界面视觉与尺寸约定
-
-- 主界面壳层样式集中在 `main.py` 的 `apply_visual_style()`，只负责菜单栏、左侧导航、状态栏、空页面和错误页。
-- 主界面样式通过对象名限定范围，例如 `mainWindow`、`mainMenuBar`、`toolNavigation`、`toolPages`、`mainStatusBar`，避免通用 QSS 泄漏到子工具内部控件。
-- 子工具内部控件样式由子工具自行维护；主界面不要用宽泛选择器统一改写 `QPushButton`、`QComboBox`、`QTableWidget` 等子控件。
-- 子工具统一视觉基调(下称“统一样式”):浅灰背景、白色输入/文本区域、蓝色主按钮、4px 圆角、绿色进度条；子工具文档只需说明与此基调的差异,不必重复描述。
-- 导航项宽度由左侧栏宽度控制；新增长名称工具时优先调整 `toolSidebar` 宽度或工具显示名，而不是截短工具名。
-- 主窗口根据当前工具页面推荐尺寸调整大小，优先使用子工具 `preferred_size` 动态属性，其次使用有效 `sizeHint()`、`minimumSize()` 或加载时记录的初始尺寸。
-- 主窗口尺寸会限制在当前屏幕可用区域内；子工具不应假设主窗口一定等于自己的 `.ui` 原始尺寸。
-
-## 已注册子工具
-
-当前已注册的工具及其元数据(id、目录、文档、入口、启用状态)以 `tools_registry.py` 为准;每个工具的独立运行入口见对应子工具 `AGENT.md`。
-
-## 新增子工具登记要求
-
-- 子工具必须有独立目录和该目录下的 `AGENT.md`,并按“子工具注册契约”暴露稳定入口。
-- 在 `tools_registry.py` 登记工具即完成接入,主界面按注册顺序加载。
-
-## 主界面完成标准
-
-- 主界面相关修改完成后，至少做一次启动冒烟验证：GUI 能启动，且任一子工具加载失败时主界面仍可打开并展示错误占位页。
+- 项目介绍、安装和独立工具入口见 `README.md`。
+- RBT 转 ATP：`docs/rbt2atp.md`
+- RBT 文件整理：`docs/rbt-organization.md`
+- RBT/BIT 互转：`docs/rbt-bit-converter.md`
+- RBT 转 VCD：`docs/rbt2vcd.md`
+- 创建 Vivado 工程：`docs/create-project.md`
+- 配置板烧写程序 V2：`docs/config-board-v2.md`
+- 生成 UCF 约束：`docs/generate-ucf.md`

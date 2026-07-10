@@ -1,4 +1,4 @@
-# GenerateUCF 子工具 Agent 准则
+# GenerateUCF 子工具文档
 
 ## 工具边界
 

@@ -166,6 +166,7 @@ FPGA-tools/
   tools_registry.py            # 子工具注册表
   common/
     services.py                # 主界面提供给子工具的公共服务
+  docs/                        # 子工具详细规则、资源和验证说明
   RBT2ATP/                     # RBT 转 ATP 工具
   RBT_Organization/            # RBT 文件整理工具
   RBT_BIT_Converter/           # RBT/BIT 互转工具
@@ -177,10 +178,10 @@ FPGA-tools/
 
 新增子工具时，需要：
 
-1. 新建独立工具目录和该目录下的 `AGENT.md`。
+1. 新建独立工具目录，并在 `docs/` 下新增对应子工具文档。
 2. 在工具目录的 `__init__.py` 中暴露 `TOOL_ID`、`TOOL_NAME` 和 `create_widget(parent=None, services=None)`。
 3. 在 `tools_registry.py` 中登记工具元数据。
-4. 同步更新根目录 `AGENT.md` 的子工具入口清单。
+4. 同步更新根目录 `AGENT.md` 的文档索引。
 
 ## 开发与验证
 
@@ -207,6 +208,6 @@ python main.py
 ## 维护原则
 
 - 主界面只负责应用壳、工具页面加载、公共服务和错误展示，不实现具体 FPGA 文件格式逻辑。
-- 子工具的业务规则应放在各自目录中，GUI 只负责输入、输出、状态和交互。
+- 子工具的详细业务规则维护在 `docs/`，GUI 只负责输入、输出、状态和交互。
 - 共享能力通过 `common/services.py` 提供，避免子工具反向依赖主窗口实现。
-- 新增或调整文件格式、硬件协议、Vivado 流程时，同步更新对应子工具的 `AGENT.md`。
+- 新增或调整文件格式、硬件协议、Vivado 流程时，同步更新 `docs/` 下对应子工具文档。

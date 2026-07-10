@@ -1,4 +1,4 @@
-# RBT2VCD 子工具 Agent 准则
+# RBT2VCD 子工具文档
 
 ## 工具定位
 
