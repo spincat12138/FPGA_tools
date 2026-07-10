@@ -13,6 +13,7 @@ py38/
 .idea/
 .vscode/
 .claude/
+.codex/
 
 # Test, coverage and packaging output
 .pytest_cache/
