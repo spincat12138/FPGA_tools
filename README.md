@@ -88,9 +88,20 @@ GUI 中可以分别选择多个 `.rbt` 或 `.bit` 文件批量转换。RBT 转 B
 
 ```powershell
 python .\RBT2VCD\rbt2vcd.py .\example.rbt .\example.vcd
+python .\RBT2VCD\rbt2vcd.py .\example.rbt .\example.vcd --profile .\RBT2VCD\profile.example.json
 ```
 
-GUI 中可以选择多个 `.rbt` 文件批量转换。默认输出到每个输入文件所在目录，也可以指定统一输出目录。
+GUI 中可以选择多个 `.rbt` 文件批量转换。默认输出到每个输入文件所在目录，也可以指定统一输出目录；需要自定义 VCD 信号和初始化向量时，在界面中选择配置 JSON。
+
+`RBT2VCD/profile.example.json` 是当前默认规则的可编辑示例。配置只需要维护：
+
+- `SIGNALS`：VCD 信号名数组，兼容小写键 `signals`。
+- `CTRL_DATA`、`CTRL_SETUP`、`CTRL_PROG_LOW`、`CTRL_TAIL`：控制信号值，也兼容对应的小写键。
+- `WORD_SIZE`：RBT 数据行位宽，默认 32。
+
+程序会自动在四种控制值后补 `WORD_SIZE` 个 0，生成 header 和 tail 向量；数据阶段自动生成 `CTRL_DATA + RBT数据字`。现有重复规则保持不变：header 依次为 `CTRL_DATA x12`、`CTRL_SETUP x4`、`CTRL_PROG_LOW x8`、`CTRL_DATA x16`，tail 为 `CTRL_TAIL x14`。
+
+四个 `CTRL_*` 的位宽必须等于 `SIGNALS` 数量减去 `WORD_SIZE`；不满足时转换会直接报错，避免生成错位 VCD。
 
 ### 创建 Vivado 工程
 

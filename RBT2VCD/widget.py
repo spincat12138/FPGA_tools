@@ -6,17 +6,18 @@ import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from .metadata import TOOL_ID, TOOL_NAME
-from .rbt2vcd import convert_rbt_to_vcd, format_elapsed_seconds
+from .rbt2vcd import convert_rbt_to_vcd, format_elapsed_seconds, load_rbt2vcd_profile
 
 
 class ConvertWorker(QtCore.QObject):
     progress = QtCore.pyqtSignal(int, str)
     finished = QtCore.pyqtSignal(object)
 
-    def __init__(self, jobs, period_ps=20000):
+    def __init__(self, jobs, period_ps=20000, profile=None):
         super().__init__()
         self.jobs = jobs
         self.period_ps = period_ps
+        self.profile = profile
 
     @QtCore.pyqtSlot()
     def run(self):
@@ -32,6 +33,7 @@ class ConvertWorker(QtCore.QObject):
                     input_path,
                     output_path,
                     period_ps=self.period_ps,
+                    profile=self.profile,
                 )
                 results.append({
                     "input": str(input_path),
@@ -122,6 +124,17 @@ class Rbt2VcdWidget(QtWidgets.QWidget):
         output_row.addWidget(self.output_edit, 1)
         output_row.addWidget(self.output_browse_button)
 
+        profile_row = QtWidgets.QHBoxLayout()
+        profile_row.setSpacing(8)
+        profile_label = QtWidgets.QLabel("配置JSON")
+        self.profile_edit = QtWidgets.QLineEdit()
+        self.profile_edit.setPlaceholderText("可选；自定义 SIGNALS 和 CTRL_* 控制值")
+        self.profile_browse_button = QtWidgets.QPushButton("浏览...")
+        self.profile_browse_button.clicked.connect(self._browse_profile_file)
+        profile_row.addWidget(profile_label)
+        profile_row.addWidget(self.profile_edit, 1)
+        profile_row.addWidget(self.profile_browse_button)
+
         button_row = QtWidgets.QHBoxLayout()
         button_row.setSpacing(8)
         self.convert_button = QtWidgets.QPushButton("开始转换")
@@ -146,6 +159,7 @@ class Rbt2VcdWidget(QtWidgets.QWidget):
         main_layout.addWidget(title)
         main_layout.addLayout(input_row)
         main_layout.addLayout(output_row)
+        main_layout.addLayout(profile_row)
         main_layout.addLayout(button_row)
         main_layout.addWidget(self.progress_bar)
         main_layout.addWidget(self.log_view, 1)
@@ -241,11 +255,27 @@ class Rbt2VcdWidget(QtWidgets.QWidget):
         if directory:
             self.output_edit.setText(directory)
 
+    def _browse_profile_file(self):
+        start_dir = self._start_dir_from_text(self.profile_edit.text() or self.input_edit.text())
+        file_name, _selected_filter = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "选择RBT2VCD配置JSON",
+            start_dir,
+            "JSON Files (*.json);;All Files (*)",
+        )
+        if file_name:
+            self.profile_edit.setText(file_name)
+
     def _start_conversion(self):
         input_files = self._parse_paths(self.input_edit.text())
         if not input_files:
             self._show_error("输入不完整", "请先选择要转换的 RBT 文件")
             return
+
+        profile_info = self._load_profile()
+        if profile_info is None:
+            return
+        profile, profile_path = profile_info
 
         jobs = self._build_jobs(input_files)
         if jobs is None:
@@ -256,10 +286,13 @@ class Rbt2VcdWidget(QtWidgets.QWidget):
         self.open_output_button.setEnabled(False)
         self._append_log("开始批量转换：RBT 转 VCD")
         self._append_log("共 {count} 个文件".format(count=len(jobs)))
+        if profile_path is not None:
+            self._append_log("使用配置：{path}".format(path=profile_path))
+        self._append_log("VCD信号数量：{count}".format(count=profile.signal_count))
 
         self._set_running(True)
         self._thread = QtCore.QThread(self)
-        self._worker = ConvertWorker(jobs)
+        self._worker = ConvertWorker(jobs, profile=profile)
         self._worker.moveToThread(self._thread)
         self._thread.started.connect(self._worker.run)
         self._worker.progress.connect(self._on_progress)
@@ -365,8 +398,10 @@ class Rbt2VcdWidget(QtWidgets.QWidget):
     def _set_running(self, running):
         self.input_edit.setEnabled(not running)
         self.output_edit.setEnabled(not running)
+        self.profile_edit.setEnabled(not running)
         self.input_browse_button.setEnabled(not running)
         self.output_browse_button.setEnabled(not running)
+        self.profile_browse_button.setEnabled(not running)
         self.convert_button.setEnabled(not running)
         if self.services is not None:
             self.services.set_busy(TOOL_ID, running, "正在执行RBT转VCD" if running else None)
@@ -391,6 +426,25 @@ class Rbt2VcdWidget(QtWidgets.QWidget):
             if first_path.parent.exists():
                 return str(first_path.parent)
         return str(Path.cwd())
+
+    def _load_profile(self):
+        profile_text = self.profile_edit.text().strip().strip('"')
+        profile_path = Path(profile_text) if profile_text else None
+        if profile_path is not None and not profile_path.is_file():
+            self._show_error("配置文件不存在", "找不到配置JSON：{path}".format(path=profile_path))
+            return None
+
+        try:
+            profile = load_rbt2vcd_profile(profile_path)
+        except Exception as exc:
+            self._show_error(
+                "配置文件无效",
+                str(exc),
+                detail=traceback.format_exc(),
+            )
+            return None
+
+        return profile, profile_path
 
     def _duplicate_paths(self, paths):
         seen = set()
