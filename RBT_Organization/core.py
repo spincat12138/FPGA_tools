@@ -11,6 +11,7 @@ class RbtCopyRecord:
     source: Path
     destination: Path
     file_type: str = "rbt"
+    overwritten: bool = False
 
 
 @dataclass(frozen=True)
@@ -65,17 +66,19 @@ def copy_and_rename_rbt_files(
             for src_path in _iter_files(source_path, skipped_dirs, ".bit")
         )
 
-    _validate_copy_destinations(source_path, copy_tasks)
+    planned_tasks = _plan_copy_destinations(source_path, copy_tasks)
 
     copied_records = []
-    total = len(copy_tasks)
-    for index, (src_path, output_dir, file_type) in enumerate(copy_tasks, start=1):
-        dest_path = output_dir / _destination_filename(source_path, src_path, file_type)
+    total = len(planned_tasks)
+    for index, (src_path, dest_path, file_type) in enumerate(planned_tasks, start=1):
+        dest_path.parent.mkdir(parents=True, exist_ok=True)
+        overwritten = dest_path.exists()
         shutil.copy2(str(src_path), str(dest_path))
         record = RbtCopyRecord(
             source=src_path,
             destination=dest_path,
             file_type=file_type,
+            overwritten=overwritten,
         )
         copied_records.append(record)
         if progress_callback is not None:
@@ -129,44 +132,79 @@ def _iter_files(source_root, skipped_dirs, suffix):
                 yield (root_path / filename).resolve()
 
 
-def _validate_copy_destinations(source_root, copy_tasks):
-    destinations = {}
-    for src_path, output_dir, file_type in copy_tasks:
-        dest_path = output_dir / _destination_filename(source_root, src_path, file_type)
-        key = os.path.normcase(str(dest_path.resolve()))
-        destinations.setdefault(key, []).append((src_path, dest_path))
+def _plan_copy_destinations(source_root, copy_tasks):
+    planned_items = [
+        {
+            "source": src_path,
+            "output_dir": output_dir,
+            "file_type": file_type,
+            "depth": 1,
+            "max_depth": len(_destination_name_parts(source_root, src_path)),
+        }
+        for src_path, output_dir, file_type in copy_tasks
+    ]
 
-    conflicts = []
-    for records in destinations.values():
-        dest_path = records[0][1]
-        if len(records) > 1:
-            sources = "；".join(str(src_path) for src_path, _ in records)
-            conflicts.append(
-                "目标 {destination} 对应多个源文件：{sources}".format(
-                    destination=dest_path,
-                    sources=sources,
+    while True:
+        destinations = {}
+        for item in planned_items:
+            dest_path = _destination_path(
+                source_root,
+                item["source"],
+                item["output_dir"],
+                item["file_type"],
+                item["depth"],
+            )
+            key = os.path.normcase(str(dest_path.resolve()))
+            destinations.setdefault(key, []).append(item)
+
+        conflicts = [items for items in destinations.values() if len(items) > 1]
+        if not conflicts:
+            return tuple(
+                (
+                    item["source"],
+                    _destination_path(
+                        source_root,
+                        item["source"],
+                        item["output_dir"],
+                        item["file_type"],
+                        item["depth"],
+                    ),
+                    item["file_type"],
+                )
+                for item in planned_items
+            )
+
+        unresolved_conflicts = []
+        for items in conflicts:
+            expandable_items = [
+                item for item in items if item["depth"] < item["max_depth"]
+            ]
+            if not expandable_items:
+                sources = "；".join(str(item["source"]) for item in items)
+                unresolved_conflicts.append(sources)
+                continue
+            for item in expandable_items:
+                item["depth"] += 1
+
+        if unresolved_conflicts:
+            raise FileExistsError(
+                "检测到无法自动消解的输出文件名冲突：\n{details}".format(
+                    details="\n".join(unresolved_conflicts)
                 )
             )
-        elif dest_path.exists():
-            conflicts.append(
-                "目标文件已存在：{destination}，源文件：{source}".format(
-                    destination=dest_path,
-                    source=records[0][0],
-                )
-            )
-
-    if conflicts:
-        raise FileExistsError(
-            "检测到输出文件名冲突，已停止整理以避免覆盖。\n{details}".format(
-                details="\n".join(conflicts)
-            )
-        )
 
 
-def _destination_filename(source_root, src_path, file_type):
+def _destination_path(source_root, src_path, output_dir, file_type, depth):
+    name_parts = _destination_name_parts(source_root, src_path)
+    selected_parts = name_parts[:depth]
+    return Path(output_dir, *selected_parts[:-1], "{name}.{file_type}".format(
+        name=selected_parts[-1],
+        file_type=file_type,
+    ))
+
+
+def _destination_name_parts(source_root, src_path):
     relative_parts = src_path.relative_to(source_root).parts
     if len(relative_parts) == 1:
-        base_name = src_path.stem
-    else:
-        base_name = relative_parts[0]
-    return "{base_name}.{file_type}".format(base_name=base_name, file_type=file_type)
+        return (src_path.stem,)
+    return tuple(relative_parts[:-1]) + (src_path.stem,)
