@@ -38,6 +38,9 @@ CONVERT_FILTERS = (
     "txt_file (*.txt);;"
     "All File (*)"
 )
+COMBO_ARROW_PATH = (
+    Path(__file__).resolve().parent.parent / "GenerateUcf" / "assets" / "arrow-down.png"
+).as_posix()
 
 
 class OperationWorker(QtCore.QObject):
@@ -120,8 +123,7 @@ class ConfigBoardWidget(QtWidgets.QWidget):
             }
 
             QLineEdit,
-            QPlainTextEdit,
-            QComboBox {
+            QPlainTextEdit {
             background-color: #ffffff;
             border: 1px solid #dcdfe6;
             border-radius: 4px;
@@ -130,14 +132,59 @@ class ConfigBoardWidget(QtWidgets.QWidget):
             }
 
             QLineEdit:focus,
-            QPlainTextEdit:focus,
-            QComboBox:focus {
+            QPlainTextEdit:focus {
             border-color: #409eff;
             }
 
             QLineEdit:read-only {
             color: #606266;
             background-color: #ffffff;
+            }
+
+            QComboBox {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 4px 26px 4px 6px;
+            background-color: white;
+            color: #303133;
+            }
+
+            QComboBox:focus {
+            border: 1px solid #87ceeb;
+            }
+
+            QComboBox:disabled {
+            background-color: #f5f7fa;
+            border-color: #e4e7ed;
+            color: #909399;
+            }
+
+            QComboBox::drop-down {
+            subcontrol-origin: padding;
+            subcontrol-position: top right;
+            width: 22px;
+            border-left: 1px solid #ccc;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+            background-color: #f5f5f5;
+            }
+
+            QComboBox::drop-down:hover {
+            background-color: #e8e8e8;
+            }
+
+            QComboBox::down-arrow {
+            image: url("__COMBO_ARROW_PATH__");
+            width: 8px;
+            height: 6px;
+            }
+
+            QComboBox QAbstractItemView {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            selection-background-color: #87ceeb;
+            selection-color: #333;
+            outline: 0;
             }
 
             QPushButton {
@@ -191,7 +238,7 @@ class ConfigBoardWidget(QtWidgets.QWidget):
             min-height: 24px;
             padding: 3px 6px;
             }
-        """)
+        """.replace("__COMBO_ARROW_PATH__", COMBO_ARROW_PATH))
 
     def _refresh_initial_usb_status(self):
         try:

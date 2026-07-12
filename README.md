@@ -1,6 +1,6 @@
 # FPGA-tools
 
-PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、RBT/BIT 互转、RBT 转 VCD、Vivado 工程创建和 FTDI 配置板烧写/回读验证。
+PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、RBT/BIT 互转、RBT 转 VCD、Vivado 工程创建、FTDI 配置板烧写/回读验证和测试项提取。
 
 ## 项目简介
 
@@ -17,12 +17,14 @@ PyQt5 桌面端 FPGA 工具集合，集成 RBT 转 ATP、RBT 文件整理、RBT/
 | 创建 Vivado 工程 | `Create_Project/` | 创建 Vivado 工程目录结构，或生成 Tcl 并调用 Vivado batch 构建工程 |
 | 配置板烧写程序 V2 | `Config_Board_V2/` | 通过 FTDI USB 设备执行握手、擦除、配置、ReadBack、回读验证和码流转换 |
 | 生成 UCF 约束 | `GenerateUcf/` | 使用 JSON profile 配置模块、层级模板和坐标规则，生成 `.ucf` 约束文件 |
+| 提取测试项名字 | `Extract_Testcase/` | 从 `ultra`、`93k`、`j750` 平台文本日志中提取测试项，并输出 Excel 汇总 |
 
 ## 环境要求
 
 - Windows 环境优先，部分工具默认路径和硬件依赖面向 Windows。
 - Python 3.8+。
 - PyQt5，用于主界面和各子工具 GUI。
+- openpyxl，用于“提取测试项名字”的 Excel 输出。
 - Vivado，仅在使用“创建 Vivado 工程”的构建功能时需要。
 - FTDI D2XX 驱动和 `ftd2xx` Python 包，仅在使用“配置板烧写程序 V2”的 USB 硬件功能时需要。
 
@@ -33,6 +35,7 @@ python -m venv py38
 .\py38\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install PyQt5
+python -m pip install openpyxl
 ```
 
 使用配置板烧写功能时，再安装：
@@ -159,6 +162,15 @@ python -m GenerateUcf.generate_ucf --profile .\my_profile.json --output .\constr
 
 也可以在主界面中打开“生成UCF约束”，选择内置或外部 JSON profile，在左侧修改参数，右侧实时预览输出示例。
 
+### 提取测试项名字
+
+```powershell
+python .\Extract_Testcase\extract_test_items.py .\data -p ultra -o .\output
+python .\Extract_Testcase\extract_test_items.py .\example.txt -p 93k -o .\example_test_items.xlsx
+```
+
+GUI 中可以选择平台、单个或多个 `.txt` 文件、或包含 `.txt` 的目录。输出路径可选；留空时输出到输入文件所在目录，单文件输入时也可以指定具体 `.xlsx` 文件。
+
 ## 项目结构
 
 ```text
@@ -175,6 +187,7 @@ FPGA-tools/
   Create_Project/              # Vivado 工程创建工具
   Config_Board_V2/             # 配置板烧写和回读工具
   GenerateUcf/                  # UCF 约束生成工具
+  Extract_Testcase/             # 测试项名字提取工具
 ```
 
 新增子工具时，需要：
@@ -196,6 +209,7 @@ python -m py_compile RBT_BIT_Converter\rbt2bit.py RBT_BIT_Converter\bit2rbt.py R
 python -m py_compile RBT2VCD\rbt2vcd.py RBT2VCD\widget.py RBT2VCD\__init__.py
 python -m py_compile Config_Board_V2\usbtest_py.py Config_Board_V2\widget.py Config_Board_V2\usbtest_gui.py Config_Board_V2\__init__.py
 python -m py_compile GenerateUcf\core.py GenerateUcf\generate_ucf.py GenerateUcf\widget.py GenerateUcf\__init__.py
+python -m py_compile Extract_Testcase\extract_test_items.py Extract_Testcase\widget.py Extract_Testcase\__init__.py
 ```
 
 GUI 相关修改建议再做一次启动冒烟验证：

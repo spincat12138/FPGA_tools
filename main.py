@@ -126,6 +126,7 @@ TOOL_ICON_TYPES = {
     "create_project": "wand",
     "config_board_v2": "chip",
     "generate_ucf": "file",
+    "extract_testcase": "file",
 }
 
 

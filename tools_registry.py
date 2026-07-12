@@ -57,4 +57,12 @@ TOOLS = [
         "entry": "create_widget",
         "enabled": True,
     },
+    {
+        "id": "extract_testcase",
+        "name": "提取测试项名字",
+        "package": "Extract_Testcase",
+        "doc": "docs/extract-testcase.md",
+        "entry": "create_widget",
+        "enabled": True,
+    },
 ]
