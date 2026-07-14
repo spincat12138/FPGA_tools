@@ -26,6 +26,7 @@
 
 - 优先小范围修改，遵循现有 PyQt5、目录和命名方式，不做无关重构。
 - 新增子工具时，在独立目录的 `__init__.py` 暴露 `TOOL_ID`、`TOOL_NAME`、`create_widget(parent=None, services=None)`，并在 `tools_registry.py` 登记。
+- 新增、重命名或删除 `tools_registry.py` 中动态注册的子工具时，同步更新 `.github/workflows/build-windows-exe.yml` 的 Nuitka `--include-package` 参数和语法检查清单；源码环境可导入不代表 onefile 构建会自动包含该模块。
 - `TOOL_ID` 使用小写英文、数字和下划线；`create_widget()` 返回 `QWidget` 或子类，不反向 import 主窗口。
 - 子工具需要日志、弹窗、目录选择、配置目录、进度或忙碌状态时，优先使用 `common/services.py` 的 `ToolServices`。
 - 业务输出写到用户选择的位置、输入文件旁或文档明确约定的位置；不要默认写入源码目录、临时解包目录或当前工作目录。

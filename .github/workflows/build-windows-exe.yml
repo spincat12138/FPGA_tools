@@ -59,6 +59,7 @@ jobs:
           python -m py_compile Create_Project/create_project.py Create_Project/widget.py Create_Project/__init__.py
           python -m py_compile Config_Board_V2/usbtest_py.py Config_Board_V2/widget.py Config_Board_V2/usbtest_gui.py Config_Board_V2/__init__.py
           python -m py_compile GenerateUcf/core.py GenerateUcf/generate_ucf.py GenerateUcf/widget.py GenerateUcf/__init__.py
+          python -m py_compile Extract_Testcase/extract_test_items.py Extract_Testcase/widget.py Extract_Testcase/metadata.py Extract_Testcase/__init__.py
 
       - name: Build EXE
         shell: pwsh
@@ -87,6 +88,7 @@ jobs:
             --include-data-files=GenerateUcf/generate_ucf.ui=GenerateUcf/generate_ucf.ui `
             --include-data-dir=GenerateUcf/profiles=GenerateUcf/profiles `
             --include-data-dir=GenerateUcf/assets=GenerateUcf/assets `
+            --include-package=Extract_Testcase `
             --include-data-dir=common/assets=common/assets `
             main.py
 
